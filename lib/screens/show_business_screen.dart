@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pac_novale/screens/create_business_screen.dart';
 
 class ShowBusinessScreen extends StatelessWidget {
   @override
@@ -10,8 +11,8 @@ class ShowBusinessScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Image.asset(
-              'assets/novale_hub_logo.jpeg', // Caminho da imagem
-              height: 150, // Defina o tamanho que achar melhor
+              'assets/novale_hub_logo.jpeg',
+              height: 150,
             ),
             SizedBox(height: 100),
             Text(
@@ -26,9 +27,11 @@ class ShowBusinessScreen extends StatelessWidget {
             SizedBox(height: 50),
             ElevatedButton(
               onPressed: () {
-                print('Cadastrar Empresa pressed');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CreateBusinessScreen())
+                );
               },
-
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
                 padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
