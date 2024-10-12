@@ -1,0 +1,1 @@
+ C:\\Users\\gusta\\OneDrive\\Documentos\\GitHub\\pac-novale\\.dart_tool\\flutter_build\\7204577271342e94021d741f0172fc0c\\native_assets.yaml: 
