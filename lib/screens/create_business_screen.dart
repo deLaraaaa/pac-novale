@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 
 class CreateBusinessScreen extends StatefulWidget {
+  const CreateBusinessScreen({super.key});
+
   @override
-  _CreateBusinessScreenState createState() => _CreateBusinessScreenState();
+  CreateBusinessScreenState createState() => CreateBusinessScreenState();
 }
 
-class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
+class CreateBusinessScreenState extends State<CreateBusinessScreen> {
 
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _businessCNPJController = TextEditingController();
@@ -42,9 +44,9 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Cadastrar Empresa'),
+        title: const Text('Cadastrar Empresa'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back), // Ícone de seta para voltar
+          icon: const Icon(Icons.arrow_back), // Ícone de seta para voltar
           onPressed: () {
             Navigator.pop(context); // Volta para a página anterior
           },
@@ -56,7 +58,7 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
           child:Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Insira o nome da empresa:',
                 style: TextStyle(
                   fontSize: 20,
@@ -65,26 +67,26 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                 ),
                 textAlign: TextAlign.left,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _businessNameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nome da Empresa',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               Row(
                 children:[
-                  Text(
+                  const Text(
                     'CNPJ:',
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _businessCNPJController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'CNPJ da Empresa',
                         border: OutlineInputBorder(),
                       ),
@@ -92,18 +94,18 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children:[
-                  Text(
+                  const Text(
                     'Negócio:',
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _businessMarketController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Negócio da Empresa',
                         border: OutlineInputBorder(),
                       ),
@@ -111,18 +113,18 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children:[
-                  Text(
+                  const Text(
                     'Inovação:',
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _businessInovationController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Inovação da Empresa',
                         border: OutlineInputBorder(),
                       ),
@@ -130,20 +132,20 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
-                  Text(
+                  const Text(
                     'Tipo da Empresa:',
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   DropdownButton<String>(
                     value: selectedValue,
-                    icon: Icon(Icons.arrow_downward),
+                    icon: const Icon(Icons.arrow_downward),
                     iconSize: 24, // Tamanho do ícone
                     elevation: 16, // Elevação da lista ao ser aberta
-                    style: TextStyle(color: Colors.black, fontSize: 16),
+                    style: const TextStyle(color: Colors.black, fontSize: 16),
                     underline: Container(
                       height: 2,
                       color: Colors.teal,
@@ -161,18 +163,18 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children:[
-                  Text(
+                  const Text(
                     'Estágio:',
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _businessStatusController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Inovação da Empresa',
                         border: OutlineInputBorder(),
                       ),
@@ -180,18 +182,18 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children:[
-                  Text(
+                  const Text(
                     'Entrada:',
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _businessEntryDateController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Data de Entrada',
                         border: OutlineInputBorder(),
                       ),
@@ -199,18 +201,18 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children:[
-                  Text(
+                  const Text(
                     'Saída:',
                     style: TextStyle(fontSize: 14),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _businessExitDateController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Data de Saída',
                         border: OutlineInputBorder(),
                       ),
@@ -218,7 +220,7 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -228,12 +230,12 @@ class _CreateBusinessScreenState extends State<CreateBusinessScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal,
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)
                     )
                 ),
-                child: Text(
+                child: const Text(
                   'CRIAR EMPRESA',
                   style: TextStyle(
                       fontFamily: 'Roboto',
