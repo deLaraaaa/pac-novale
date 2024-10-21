@@ -1,57 +1,34 @@
 import express from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
-import mongoose from "mongoose";
+import companyService from "./company_service";
 
 // Inicializa o app
 const app = express();
-app.use(bodyParser.json());
-app.use(cors());
-
-// Conectando ao MongoDB (você pode usar outra base de dados)
-mongoose.connect('mongodb://localhost:27017/business', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-// Modelo da Empresa
-const CompanySchema = new mongoose.Schema({
-    name: String,
-    cnpj: String,
-    businessMarket: String,
-    businessInnovation: String,
-    businessStatus: String,
-    entryDate: Date,
-    exitDate: Date,
-});
-
-const Company = mongoose.model('Company', CompanySchema);
+app.use(express.json()); // Já vem no express, então body-parser é desnecessário
+app.use(cors()); // Permite requisições cross-origin
 
 // Rota para criar uma empresa
 app.post('/companies', async (req, res) => {
-    const data = req.body;
-
-    try {
-        const company = new Company(data);
-        await company.save();
-        res.status(201).send(company);
-    } catch (err) {
-        res.status(400).send(err);
-    }
+  try {
+    const newCompanyId = await companyService.addCompany(req.body); // Adiciona empresa no Firestore
+    res.status(201).json({ message: 'Empresa criada com sucesso', id: newCompanyId }); // Envia o ID da nova empresa
+  } catch (err) {
+    res.status(400).send({ error: 'Erro ao criar empresa', details: err.message });
+  }
 });
 
 // Rota para listar as empresas
 app.get('/companies', async (req, res) => {
-    try {
-        const companies = await Company.find({});
-        res.status(200).send(companies);
-    } catch (err) {
-        res.status(500).send(err);
-    }
+  try {
+    const companies = await companyService.fetchCompanies(); // Busca as empresas no Firestore
+    res.status(200).json(companies); // Envia as empresas no formato JSON
+  } catch (err) {
+    res.status(500).send({ error: 'Erro ao buscar empresas', details: err.message });
+  }
 });
 
 // Inicializa o servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
