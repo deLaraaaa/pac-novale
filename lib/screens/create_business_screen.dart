@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:pac_novale/screens/show_business_screen.dart';
 
 class CreateBusinessScreen extends StatefulWidget {
   const CreateBusinessScreen({super.key});
@@ -225,7 +225,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                 onPressed: () {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateBusinessScreen())
+                      MaterialPageRoute(builder: (context) => const ShowBusinessScreen())
                   );
                 },
                 style: ElevatedButton.styleFrom(
