@@ -47,3 +47,4 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .env.example
+server\pac-novale-firebase-adminsdk-tqjpv-de30d8575e.json
