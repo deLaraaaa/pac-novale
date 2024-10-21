@@ -12,7 +12,8 @@ class ShowBusinessScreen extends StatefulWidget {
 
 class ShowBusinessScreenState extends State<ShowBusinessScreen> {
   List<Map<String, dynamic>> companies = [];
-  final CompanyService companyService = CompanyService(); // Serviço para fazer requisições
+  final CompanyService companyService =
+      CompanyService(); // Serviço para fazer requisições
 
   @override
   void initState() {
@@ -23,9 +24,11 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
   // Função para buscar as empresas do backend
   Future<void> fetchCompanies() async {
     try {
-      final List<Map<String, dynamic>> fetchedCompanies = await companyService.fetchCompanies();
+      final List<Map<String, dynamic>> fetchedCompanies =
+          await companyService.fetchCompanies();
       setState(() {
-        companies = fetchedCompanies; // Atualiza a lista de empresas com os dados recebidos
+        companies =
+            fetchedCompanies; // Atualiza a lista de empresas com os dados recebidos
       });
     } catch (error) {
       print('Failed to fetch companies: $error');
@@ -54,7 +57,7 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                 height: 150,
               ),
               const SizedBox(height: 100),
-              
+
               // Verifica se há empresas. Caso contrário, exibe mensagem
               if (companies.isEmpty)
                 const Text(
@@ -66,41 +69,47 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-              
+
               // Se houver empresas, exibe os CompanyCards
               if (companies.isNotEmpty)
                 Expanded(
                   child: ListView.builder(
                     itemCount: companies.length, // Número de empresas
                     itemBuilder: (context, index) {
-                      Map<String, dynamic> company = companies[index]; // Empresa atual
-                      Color color = colors[index % colors.length]; // Alterna as cores
-                      
+                      Map<String, dynamic> company =
+                          companies[index]; // Empresa atual
+                      Color color =
+                          colors[index % colors.length]; // Alterna as cores
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: CompanyCard(
-                          companyName: company['name'] ?? 'Nome não disponível', // Nome da empresa
-                          companyCNPJ: company['cnpj'] ?? 'CNPJ não disponível', // CNPJ da empresa
+                          companyName: company['name'] ??
+                              'Nome não disponível', // Nome da empresa
+                          companyCNPJ: company['cnpj'] ??
+                              'CNPJ não disponível', // CNPJ da empresa
                           color: color, // Cor para o cartão
                         ),
                       );
                     },
                   ),
                 ),
-              
+
               const SizedBox(height: 50),
-              
+
               // Botão para cadastrar nova empresa
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CreateBusinessScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const CreateBusinessScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),

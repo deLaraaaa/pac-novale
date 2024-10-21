@@ -10,46 +10,48 @@ app.use(cors());
 
 // Conectando ao MongoDB (você pode usar outra base de dados)
 mongoose.connect('mongodb://localhost:27017/business', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
 
 // Modelo da Empresa
 const CompanySchema = new mongoose.Schema({
-  name: String,
-  cnpj: String,
-  businessMarket: String,
-  businessInnovation: String,
-  businessStatus: String,
-  entryDate: Date,
-  exitDate: Date,
+    name: String,
+    cnpj: String,
+    businessMarket: String,
+    businessInnovation: String,
+    businessStatus: String,
+    entryDate: Date,
+    exitDate: Date,
 });
 
 const Company = mongoose.model('Company', CompanySchema);
 
 // Rota para criar uma empresa
 app.post('/companies', async (req, res) => {
-  try {
-    const company = new Company(req.body);
-    await company.save();
-    res.status(201).send(company);
-  } catch (err) {
-    res.status(400).send(err);
-  }
+    const data = req.body;
+
+    try {
+        const company = new Company(data);
+        await company.save();
+        res.status(201).send(company);
+    } catch (err) {
+        res.status(400).send(err);
+    }
 });
 
 // Rota para listar as empresas
 app.get('/companies', async (req, res) => {
-  try {
-    const companies = await Company.find({});
-    res.status(200).send(companies);
-  } catch (err) {
-    res.status(500).send(err);
-  }
+    try {
+        const companies = await Company.find({});
+        res.status(200).send(companies);
+    } catch (err) {
+        res.status(500).send(err);
+    }
 });
 
 // Inicializa o servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
