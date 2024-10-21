@@ -48,3 +48,14 @@ yarn-error.log*
 .env.production.local
 .env.example
 server\pac-novale-firebase-adminsdk-tqjpv-de30d8575e.json
+windows/flutter/generated_plugins.cmake
+windows/flutter/generated_plugin_registrant.h
+windows/flutter/generated_plugin_registrant.cc
+server/pac-novale-firebase-adminsdk-tqjpv-de30d8575e.json
+macos/Flutter/GeneratedPluginRegistrant.swift
+linux/flutter/generated_plugins.cmake
+linux/flutter/generated_plugin_registrant.h
+linux/flutter/generated_plugin_registrant.cc
+.dart_tool/package_config_subset
+.dart_tool/package_config.json
+.dart_tool/dartpad/web_plugin_registrant.dart
