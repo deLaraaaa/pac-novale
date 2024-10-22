@@ -1,4 +1,4 @@
-import db from "./firebase-config";
+import db from "./firebase-config.js";
 
 // Função para buscar todas as empresas
 const fetchCompanies = async () => {
@@ -24,7 +24,7 @@ const addCompany = async (companyData) => {
     }
 };
 
-module.exports = {
+export {
     fetchCompanies,
     addCompany,
 };
