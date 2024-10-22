@@ -1,6 +1,12 @@
 # Gradle files
 .gradle/
 build/
+server/pac-novale-firebase-adminsdk-tqjpv-de30d8575e.json
+windows/
+server/pac-novale-firebase-adminsdk-tqjpv-de30d8575e.json
+macos/
+linux/
+.dart_tool/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -14,7 +20,6 @@ captures/
 .cxx/
 *.apk
 output.json
-.dart_tool/
 
 # IntelliJ
 *.iml
@@ -47,9 +52,3 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 .env.example
-server\pac-novale-firebase-adminsdk-tqjpv-de30d8575e.json
-windows/
-server/pac-novale-firebase-adminsdk-tqjpv-de30d8575e.json
-macos/
-linux/
-.dart_tool/
