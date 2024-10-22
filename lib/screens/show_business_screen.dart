@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:pac_novale/screens/create_business_screen.dart';
-import 'package:pac_novale/widgets/company_card.dart'; // Importe o CompanyCard
-import 'package:pac_novale/services/company_service.dart'; // Importe o serviço que faz as requisições HTTP
+import 'package:pac_novale/widgets/company_card.dart';
 
 class ShowBusinessScreen extends StatefulWidget {
   const ShowBusinessScreen({super.key});
@@ -12,32 +13,29 @@ class ShowBusinessScreen extends StatefulWidget {
 
 class ShowBusinessScreenState extends State<ShowBusinessScreen> {
   List<Map<String, dynamic>> companies = [];
-  final CompanyService companyService =
-      CompanyService(); // Serviço para fazer requisições
 
   @override
   void initState() {
     super.initState();
-    fetchCompanies(); // Busca as empresas do backend
+    fetchCompanies();
   }
 
-  // Função para buscar as empresas do backend
   Future<void> fetchCompanies() async {
-    try {
-      final List<Map<String, dynamic>> fetchedCompanies =
-          await companyService.fetchCompanies();
+    final url = Uri.parse('http://localhost:3000/companies');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> fetchedCompanies = json.decode(response.body);
       setState(() {
-        companies =
-            fetchedCompanies; // Atualiza a lista de empresas com os dados recebidos
+        companies = List<Map<String, dynamic>>.from(fetchedCompanies);
       });
-    } catch (error) {
-      print('Failed to fetch companies: $error');
+    } else {
+      print('Failed to fetch companies: ${response.body}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Cores para os cartões
     final List<Color> colors = [
       const Color(0xFFE94562),
       const Color(0xFF382D62),
@@ -57,8 +55,6 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                 height: 150,
               ),
               const SizedBox(height: 100),
-
-              // Verifica se há empresas. Caso contrário, exibe mensagem
               if (companies.isEmpty)
                 const Text(
                   'Você não possui nenhuma \nempresa cadastrada.',
@@ -69,35 +65,26 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
-              // Se houver empresas, exibe os CompanyCards
               if (companies.isNotEmpty)
                 Expanded(
                   child: ListView.builder(
-                    itemCount: companies.length, // Número de empresas
+                    itemCount: companies.length,
                     itemBuilder: (context, index) {
-                      Map<String, dynamic> company =
-                          companies[index]; // Empresa atual
-                      Color color =
-                          colors[index % colors.length]; // Alterna as cores
+                      Map<String, dynamic> company = companies[index];
+                      Color color = colors[index % colors.length];
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         child: CompanyCard(
-                          companyName: company['name'] ??
-                              'Nome não disponível', // Nome da empresa
-                          companyCNPJ: company['cnpj'] ??
-                              'CNPJ não disponível', // CNPJ da empresa
-                          color: color, // Cor para o cartão
+                          companyName: company['name'] ?? 'Nome não disponível',
+                          companyCNPJ: company['cnpj'] ?? 'CNPJ não disponível',
+                          color: color,
                         ),
                       );
                     },
                   ),
                 ),
-
               const SizedBox(height: 50),
-
-              // Botão para cadastrar nova empresa
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(

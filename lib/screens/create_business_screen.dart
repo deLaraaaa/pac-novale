@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:pac_novale/screens/show_business_screen.dart';
 
 class CreateBusinessScreen extends StatefulWidget {
@@ -9,7 +11,6 @@ class CreateBusinessScreen extends StatefulWidget {
 }
 
 class CreateBusinessScreenState extends State<CreateBusinessScreen> {
-
   final TextEditingController _businessNameController = TextEditingController();
   final TextEditingController _businessCNPJController = TextEditingController();
   final TextEditingController _businessMarketController = TextEditingController();
@@ -19,25 +20,48 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
   final TextEditingController _businessExitDateController = TextEditingController();
 
   String? selectedValue = 'Empresa Incubada';
-
-
   DateTime? selectedDate;
 
-  // Função para mostrar o seletor de data
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate ?? DateTime.now(), // Data inicial no seletor
-      firstDate: DateTime(2000), // Data mínima
-      lastDate: DateTime(2100), // Data máxima
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
-        selectedDate = picked; // Atualiza a data selecionada
+        selectedDate = picked;
       });
     }
   }
 
+  Future<void> _createCompany() async {
+    final url = Uri.parse('http://localhost:3000/companies');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'name': _businessNameController.text,
+        'cnpj': _businessCNPJController.text,
+        'market': _businessMarketController.text,
+        'inovation': _businessInovationController.text,
+        'status': _businessStatusController.text,
+        'entryDate': _businessEntryDateController.text,
+        'exitDate': _businessExitDateController.text,
+        'type': selectedValue,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ShowBusinessScreen()),
+      );
+    } else {
+      print('Failed to create company: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +70,16 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
       appBar: AppBar(
         title: const Text('Cadastrar Empresa'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back), // Ícone de seta para voltar
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Volta para a página anterior
+            Navigator.pop(context);
           },
         ),
       ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
-          child:Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
@@ -77,7 +101,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
               ),
               const SizedBox(height: 50),
               Row(
-                children:[
+                children: [
                   const Text(
                     'CNPJ:',
                     style: TextStyle(fontSize: 14),
@@ -96,7 +120,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
               ),
               const SizedBox(height: 20),
               Row(
-                children:[
+                children: [
                   const Text(
                     'Negócio:',
                     style: TextStyle(fontSize: 14),
@@ -115,7 +139,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
               ),
               const SizedBox(height: 20),
               Row(
-                children:[
+                children: [
                   const Text(
                     'Inovação:',
                     style: TextStyle(fontSize: 14),
@@ -143,15 +167,17 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                   DropdownButton<String>(
                     value: selectedValue,
                     icon: const Icon(Icons.arrow_downward),
-                    iconSize: 24, // Tamanho do ícone
-                    elevation: 16, // Elevação da lista ao ser aberta
+                    iconSize: 24,
+                    elevation: 16,
                     style: const TextStyle(color: Colors.black, fontSize: 16),
                     underline: Container(
                       height: 2,
                       color: Colors.teal,
                     ),
                     onChanged: (String? newValue) {
-
+                      setState(() {
+                        selectedValue = newValue;
+                      });
                     },
                     items: <String>['Empresa Incubada', 'Empresa em Tração', 'Empresa Finalizada']
                         .map<DropdownMenuItem<String>>((String value) {
@@ -165,7 +191,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
               ),
               const SizedBox(height: 20),
               Row(
-                children:[
+                children: [
                   const Text(
                     'Estágio:',
                     style: TextStyle(fontSize: 14),
@@ -184,7 +210,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
               ),
               const SizedBox(height: 20),
               Row(
-                children:[
+                children: [
                   const Text(
                     'Entrada:',
                     style: TextStyle(fontSize: 14),
@@ -203,7 +229,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
               ),
               const SizedBox(height: 20),
               Row(
-                children:[
+                children: [
                   const Text(
                     'Saída:',
                     style: TextStyle(fontSize: 14),
@@ -222,25 +248,20 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ShowBusinessScreen())
-                  );
-                },
+                onPressed: _createCompany,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)
-                    )
+                  backgroundColor: Colors.teal,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 child: const Text(
                   'CRIAR EMPRESA',
                   style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 18,
-                      color: Colors.white
+                    fontFamily: 'Roboto',
+                    fontSize: 18,
+                    color: Colors.white,
                   ),
                 ),
               ),
