@@ -38,29 +38,53 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
 
   Future<void> _createCompany() async {
     final url = Uri.parse('http://localhost:3000/companies');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'name': _businessNameController.text,
-        'cnpj': _businessCNPJController.text,
-        'market': _businessMarketController.text,
-        'inovation': _businessInovationController.text,
-        'status': _businessStatusController.text,
-        'entryDate': _businessEntryDateController.text,
-        'exitDate': _businessExitDateController.text,
-        'type': selectedValue,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ShowBusinessScreen()),
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'name': _businessNameController.text,
+          'cnpj': _businessCNPJController.text,
+          'market': _businessMarketController.text,
+          'inovation': _businessInovationController.text,
+          'status': _businessStatusController.text,
+          'entryDate': _businessEntryDateController.text,
+          'exitDate': _businessExitDateController.text,
+          'type': selectedValue,
+        }),
       );
-    } else {
-      print('Failed to create company: ${response.body}');
+
+      if (response.statusCode == 201) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ShowBusinessScreen()),
+        );
+      } else {
+        _showErrorDialog('Failed to create company: ${response.body}');
+      }
+    } catch (error) {
+      _showErrorDialog('Network error: $error');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
