@@ -17,6 +17,8 @@ const initializeCounter = async () => {
 };
 
 const createCompany = async (req, res) => {
+    const data = req.body
+
     try {
         let newCompanyId;
         await db.runTransaction(async (transaction) => {
@@ -28,7 +30,7 @@ const createCompany = async (req, res) => {
             newCompanyId = counterDoc.data().nextCompanyId;
             transaction.update(counterRef, { nextCompanyId: newCompanyId + 1 });
 
-            transaction.set(companyRef.doc(newCompanyId.toString()), req.body);
+            transaction.set(companyRef.doc(newCompanyId.toString()), data);
         });
         res.status(201).json({ message: 'Empresa criada com sucesso', id: newCompanyId });
     } catch (err) {
@@ -46,9 +48,34 @@ const getCompanies = async (req, res) => {
     }
 };
 
+const deleteCompany = async (req, res) => {
+    const companyId = req.body.id;
+
+    console.log(req.body);
+
+    if (!companyId) {
+        return res.status(400).send({ error: 'ID da empresa é obrigatório' });
+    }
+
+    try {
+        const companyDoc = companyRef.doc(companyId);
+        const doc = await companyDoc.get();
+
+        if (!doc.exists) {
+            return res.status(404).send({ error: 'Empresa não encontrada' });
+        }
+
+        await companyDoc.delete();
+        res.status(200).json({ message: 'Empresa deletada com sucesso' });
+    } catch (err) {
+        res.status(500).send({ error: 'Erro ao deletar empresa', details: err.message });
+    }
+};
+
 initializeCounter().then(() => {
     app.post('/create_companies', createCompany);
     app.get('/get_companies', getCompanies);
+    app.delete('/delete_company', deleteCompany);
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
