@@ -17,7 +17,7 @@ const initializeCounter = async () => {
 };
 
 const createCompany = async (req, res) => {
-    const data = req.body
+    const data = { ...req.body, Activate: true };
 
     try {
         let newCompanyId;
@@ -40,7 +40,7 @@ const createCompany = async (req, res) => {
 
 const getCompanies = async (req, res) => {
     try {
-        const snapshot = await companyRef.get();
+        const snapshot = await companyRef.where('Activate', '==', true).get();
         const companies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         res.status(200).json(companies);
     } catch (err) {
@@ -50,8 +50,6 @@ const getCompanies = async (req, res) => {
 
 const deleteCompany = async (req, res) => {
     const companyId = req.body.id;
-
-    console.log(req.body);
 
     if (!companyId) {
         return res.status(400).send({ error: 'ID da empresa é obrigatório' });
@@ -65,10 +63,10 @@ const deleteCompany = async (req, res) => {
             return res.status(404).send({ error: 'Empresa não encontrada' });
         }
 
-        await companyDoc.delete();
-        res.status(200).json({ message: 'Empresa deletada com sucesso' });
+        await companyDoc.update({ Activate: false });
+        res.status(200).json({ message: 'Empresa desativada com sucesso' });
     } catch (err) {
-        res.status(500).send({ error: 'Erro ao deletar empresa', details: err.message });
+        res.status(500).send({ error: 'Erro ao desativar empresa', details: err.message });
     }
 };
 

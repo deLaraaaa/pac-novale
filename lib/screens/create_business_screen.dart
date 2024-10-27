@@ -37,20 +37,21 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
   }
 
   Future<void> _createCompany() async {
-    final url = Uri.parse('http://localhost:3000/companies');
+    final url = Uri.parse('http://localhost:3000/create_companies');
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
-          'name': _businessNameController.text,
-          'cnpj': _businessCNPJController.text,
-          'market': _businessMarketController.text,
-          'inovation': _businessInovationController.text,
-          'status': _businessStatusController.text,
-          'entryDate': _businessEntryDateController.text,
-          'exitDate': _businessExitDateController.text,
-          'type': selectedValue,
+          'Name': _businessNameController.text,
+          'CNPJ': _businessCNPJController.text,
+          'Market': _businessMarketController.text,
+          'Inovation': _businessInovationController.text,
+          'Status': _businessStatusController.text,
+          'EntryDate': _businessEntryDateController.text,
+          'ExitDate': _businessExitDateController.text,
+          'Type': selectedValue,
+          'Activate': true,
         }),
       );
 
@@ -203,8 +204,11 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                         selectedValue = newValue;
                       });
                     },
-                    items: <String>['Empresa Incubada', 'Empresa em Tração', 'Empresa Finalizada']
-                        .map<DropdownMenuItem<String>>((String value) {
+                    items: <String>[
+                      'Empresa Incubada',
+                      'Empresa em Tração',
+                      'Empresa Finalizada'
+                    ].map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -225,7 +229,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                     child: TextField(
                       controller: _businessStatusController,
                       decoration: const InputDecoration(
-                        labelText: 'Inovação da Empresa',
+                        labelText: 'Estágio da Empresa',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -275,7 +279,8 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                 onPressed: _createCompany,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
