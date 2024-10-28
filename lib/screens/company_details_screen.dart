@@ -5,11 +5,13 @@ import 'dart:convert';
 class CompanyDetailsScreen extends StatefulWidget {
   final String companyId;
   final String companyName;
+  final Map<String, dynamic> companyDetails;
 
   const CompanyDetailsScreen({
     super.key,
     required this.companyId,
     required this.companyName,
+    required this.companyDetails,
   });
 
   @override
@@ -47,6 +49,8 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final companyDetails = widget.companyDetails;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.companyName),
@@ -60,9 +64,35 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       body: Stack(
         children: [
           Center(
-            child: Text(
-              'Details of ${widget.companyName}',
-              style: const TextStyle(fontSize: 24),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Nome: ${companyDetails['Name'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                  Text('CNPJ: ${companyDetails['CNPJ'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                  Text(
+                      'Negócio: ${companyDetails['Market'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                  Text(
+                      'Inovação: ${companyDetails['Inovation'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                  Text(
+                      'Estágio: ${companyDetails['Status'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                  Text(
+                      'Entrada: ${companyDetails['EntryDate'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                  Text(
+                      'Saída: ${companyDetails['ExitDate'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                  Text('Tipo: ${companyDetails['Type'] ?? 'Não disponível'}',
+                      style: const TextStyle(fontSize: 20)),
+                ],
+              ),
             ),
           ),
           if (isDeleting)

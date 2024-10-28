@@ -94,6 +94,7 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                                     companyId: company['id'],
                                     companyName: company['Name'] ??
                                         'Nome não disponível',
+                                    companyDetails: company,
                                   ),
                                 ),
                               ).then((value) {
@@ -135,20 +136,28 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 20),
+                        padding: companies.isEmpty
+                            ? const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 20)
+                            : const EdgeInsets.all(15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
-                        'CADASTRAR EMPRESA',
-                        style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: companies.isEmpty
+                          ? const Text(
+                              'CADASTRAR EMPRESA',
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                              size: 30,
+                            ),
                     ),
                   ),
                 ],

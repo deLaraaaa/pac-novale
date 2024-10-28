@@ -13,7 +13,6 @@ class CompanyService {
 
   CompanyService._internal();
 
-  // Função para listar as empresas
   Future<List<CompanyData>> fetchCompanies() async {
     try {
       final response = await http.get(Uri.parse(_baseUrl));
@@ -28,7 +27,6 @@ class CompanyService {
     }
   }
 
-  // Função para criar uma empresa
   Future<void> createCompany(CompanyData companyData) async {
     try {
       final response = await http.post(
