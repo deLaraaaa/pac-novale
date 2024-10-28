@@ -56,6 +56,12 @@
       "languageVersion": "3.1"
     },
     {
+      "name": "flutter_localizations",
+      "rootUri": "file:///Users/rafaeldelara/university/flutter/packages/flutter_localizations",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///Users/rafaeldelara/university/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -75,9 +81,9 @@
     },
     {
       "name": "intl",
-      "rootUri": "file:///Users/rafaeldelara/.pub-cache/hosted/pub.dev/intl-0.17.0",
+      "rootUri": "file:///Users/rafaeldelara/.pub-cache/hosted/pub.dev/intl-0.19.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.0"
     },
     {
       "name": "leak_tracker",
@@ -120,6 +126,12 @@
       "rootUri": "file:///Users/rafaeldelara/.pub-cache/hosted/pub.dev/meta-1.15.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "month_year_picker",
+      "rootUri": "file:///Users/rafaeldelara/.pub-cache/hosted/pub.dev/month_year_picker-0.4.0+1",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
     },
     {
       "name": "path",
@@ -194,7 +206,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-10-21T14:38:39.542149Z",
+  "generated": "2024-10-28T19:29:18.757404Z",
   "generator": "pub",
   "generatorVersion": "3.5.3",
   "flutterRoot": "file:///Users/rafaeldelara/university/flutter",

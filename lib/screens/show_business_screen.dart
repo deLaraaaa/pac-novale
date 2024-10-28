@@ -15,16 +15,10 @@ class ShowBusinessScreen extends StatefulWidget {
 class ShowBusinessScreenState extends State<ShowBusinessScreen> {
   List<Map<String, dynamic>> companies = [];
   bool isLoading = true;
-  bool isInitialLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _startInitialLoading();
-  }
-
-  Future<void> _startInitialLoading() async {
-    await Future.delayed(const Duration(seconds: 2));
     fetchCompanies();
   }
 
@@ -41,13 +35,11 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
       setState(() {
         companies = List<Map<String, dynamic>>.from(fetchedCompanies);
         isLoading = false;
-        isInitialLoading = false;
       });
     } else {
       print('Failed to fetch companies: ${response.body}');
       setState(() {
         isLoading = false;
-        isInitialLoading = false;
       });
     }
   }
@@ -75,7 +67,7 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                     height: 150,
                   ),
                   const SizedBox(height: 100),
-                  if (!isInitialLoading && !isLoading && companies.isEmpty)
+                  if (!isLoading && companies.isEmpty)
                     const Text(
                       'Você não possui nenhuma \nempresa cadastrada.',
                       style: TextStyle(
@@ -85,7 +77,7 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                  if (!isInitialLoading && !isLoading && companies.isNotEmpty)
+                  if (!isLoading && companies.isNotEmpty)
                     Expanded(
                       child: ListView.builder(
                         itemCount: companies.length,
@@ -163,12 +155,12 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
               ),
             ),
           ),
-          if (isInitialLoading || isLoading)
+          if (isLoading)
             ModalBarrier(
               color: Colors.black.withOpacity(0.5),
               dismissible: false,
             ),
-          if (isInitialLoading || isLoading)
+          if (isLoading)
             const Center(
               child: CircularProgressIndicator(),
             ),
