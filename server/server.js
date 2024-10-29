@@ -70,10 +70,33 @@ const deleteCompany = async (req, res) => {
     }
 };
 
+const updateCompany = async (req, res) => {
+    const { id, field, value } = req.body;
+
+    if (!id || !field || value === undefined) {
+        return res.status(400).send({ error: 'ID, campo e valor são obrigatórios' });
+    }
+
+    try {
+        const companyDoc = companyRef.doc(id);
+        const doc = await companyDoc.get();
+
+        if (!doc.exists) {
+            return res.status(404).send({ error: 'Empresa não encontrada' });
+        }
+
+        await companyDoc.update({ [field]: value });
+        res.status(200).json({ message: 'Empresa atualizada com sucesso' });
+    } catch (err) {
+        res.status(500).send({ error: 'Erro ao atualizar empresa', details: err.message });
+    }
+};
+
 initializeCounter().then(() => {
     app.post('/create_companies', createCompany);
     app.get('/get_companies', getCompanies);
     app.delete('/delete_company', deleteCompany);
+    app.put('/update_company', updateCompany);
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
