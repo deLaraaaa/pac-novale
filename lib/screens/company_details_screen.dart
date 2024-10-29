@@ -20,6 +20,7 @@ class CompanyDetailsScreen extends StatefulWidget {
 
 class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   bool isDeleting = false;
+  final Color buttonColor = Color(0xff00bfa5);
 
   Future<void> deleteCompany() async {
     setState(() {
@@ -47,6 +48,117 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
     }
   }
 
+  void openEditDialog(String title, String content) {
+    TextEditingController controller = TextEditingController(text: content);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(32.0)),
+          ),
+          contentPadding: EdgeInsets.only(top: 10.0),
+          content: Container(
+            width: 300.0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Text(
+                    title,
+                    style: TextStyle(fontSize: 24.0),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Divider(color: Colors.grey, height: 20.0),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.0),
+                  child: TextField(
+                    controller: controller,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      hintText: "Editar $title",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15.0),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      widget.companyDetails[title] = controller.text;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: buttonColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(32.0),
+                        bottomRight: Radius.circular(32.0),
+                      ),
+                    ),
+                    child: Text(
+                      "Salvar",
+                      style: TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildTextCard(String title, String content) {
+    return GestureDetector(
+      onLongPress: () => openEditDialog(title, content),
+      child: SizedBox(
+        width: double.infinity, // Faz o card ocupar a largura total
+        child: Card(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          elevation: 4,
+          color: const Color.fromARGB(255, 241, 241, 241),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              '$title: $content',
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildGridButton(String label) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: buttonColor,
+        maximumSize: const Size(double.infinity, 50),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      onPressed: () {
+        // Ação de cada botão, pode ser configurada aqui
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$label clicado')),
+        );
+      },
+      child: Text(label, style: TextStyle(color: Colors.white)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final companyDetails = widget.companyDetails;
@@ -63,36 +175,48 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       ),
       body: Stack(
         children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Nome: ${companyDetails['Name'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                  Text('CNPJ: ${companyDetails['CNPJ'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                  Text(
-                      'Negócio: ${companyDetails['Market'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                  Text(
-                      'Inovação: ${companyDetails['Inovation'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                  Text(
-                      'Estágio: ${companyDetails['Status'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                  Text(
-                      'Entrada: ${companyDetails['EntryDate'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                  Text(
-                      'Saída: ${companyDetails['ExitDate'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                  Text('Tipo: ${companyDetails['Type'] ?? 'Não disponível'}',
-                      style: const TextStyle(fontSize: 20)),
-                ],
-              ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+            child: ListView(
+              children: [
+                buildTextCard(
+                    'CNPJ', companyDetails['CNPJ'] ?? 'Não disponível'),
+                buildTextCard(
+                    'Negócio', companyDetails['Market'] ?? 'Não disponível'),
+                buildTextCard('Inovação',
+                    companyDetails['Inovation'] ?? 'Não disponível'),
+                buildTextCard(
+                    'Estágio', companyDetails['Status'] ?? 'Não disponível'),
+                buildTextCard(
+                    'Entrada', companyDetails['EntryDate'] ?? 'Não disponível'),
+                buildTextCard(
+                    'Saída', companyDetails['ExitDate'] ?? 'Não disponível'),
+                buildTextCard(
+                    'Tipo', companyDetails['Type'] ?? 'Não disponível'),
+                const Divider(
+                  height: 40,
+                  thickness: 2,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [
+                      buildGridButton("Engajamento"),
+                      buildGridButton("Ganho de Mercado"),
+                      buildGridButton("Funcionários"),
+                      buildGridButton("Custos"),
+                      buildGridButton("Faturamentos"),
+                      buildGridButton("Motivos de P/C"),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           if (isDeleting)
