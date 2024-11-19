@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:intl/intl.dart';
+import 'business_info/engagement_info_screen.dart';
 
 class CompanyDetailsScreen extends StatefulWidget {
   final String companyId;
@@ -215,7 +216,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
     );
   }
 
-  Widget buildGridButton(String label) {
+  Widget buildGridButton(String label, VoidCallback onPressed) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: buttonColor,
@@ -225,10 +226,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
         ),
       ),
       onPressed: () {
-        // Ação de cada botão, pode ser configurada aqui
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$label clicado')),
-        );
+        onPressed();
       },
       child: Text(label, style: TextStyle(color: Colors.white)),
     );
@@ -282,12 +280,72 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                     crossAxisSpacing: 12,
                     physics: NeverScrollableScrollPhysics(),
                     children: [
-                      buildGridButton("Engajamento"),
-                      buildGridButton("Ganho de Mercado"),
-                      buildGridButton("Funcionários"),
-                      buildGridButton("Custos"),
-                      buildGridButton("Faturamentos"),
-                      buildGridButton("Motivos de P/C"),
+                      buildGridButton(
+                        "Engajamento",
+                        () {
+                          // Navegar para a tela EngagementInfoScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EngagementInfoScreen()),
+                          );
+                        },
+                      ),
+                      buildGridButton(
+                        "Ganho de Mercado",
+                        () {
+                          // Navegar para a tela EngagementInfoScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EngagementInfoScreen()),
+                          );
+                        },
+                      ),
+                      buildGridButton(
+                        "Funcionários",
+                        () {
+                          // Navegar para a tela EngagementInfoScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EngagementInfoScreen()),
+                          );
+                        },
+                      ),
+                      buildGridButton(
+                        "Custos",
+                        () {
+                          // Navegar para a tela EngagementInfoScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EngagementInfoScreen()),
+                          );
+                        },
+                      ),
+                      buildGridButton(
+                        "Faturamentos",
+                        () {
+                          // Navegar para a tela EngagementInfoScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EngagementInfoScreen()),
+                          );
+                        },
+                      ),
+                      buildGridButton(
+                        "Motivos de P/C",
+                        () {
+                          // Navegar para a tela EngagementInfoScreen
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EngagementInfoScreen()),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),

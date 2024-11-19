@@ -1,8 +1,8 @@
 import admin from "firebase-admin";
-import serviceAccount from "./key/pac-novale2-firebase-adminsdk-6mljm-c902412ef9.json" assert { type: "json" };
+import serviceAccount from "./key/pac-novale2-firebase-adminsdk-6mljm-2923cb9de2.json" assert { type: "json" };
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const db = admin.firestore();
