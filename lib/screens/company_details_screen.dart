@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:pac_novale/screens/business_info/market_gain_info_screen.dart';
 import 'business_info/engagement_info_screen.dart';
 
 class CompanyDetailsScreen extends StatefulWidget {
@@ -298,7 +299,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                                builder: (context) => MarketGainInfoScreen()),
                           );
                         },
                       ),

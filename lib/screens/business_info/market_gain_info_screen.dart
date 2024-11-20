@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class EngagementInfoScreen extends StatefulWidget {
+class MarketGainInfoScreen extends StatefulWidget {
   @override
-  _EngagementInfoScreenState createState() => _EngagementInfoScreenState();
+  _MarketGainInfoScreenState createState() => _MarketGainInfoScreenState();
 }
 
-class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
+class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
   bool showViewMode = true; // Define o estado inicial como "Exibir Informações"
   bool showAverage = false; // Alterna entre Média e Soma
   DateTime? selectedStartDate;
@@ -45,17 +45,16 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
 
   // Informações fictícias para demonstração
   final Map<String, String> info = {
-    "Mentorias": "15",
-    "Cursos": "8",
-    "Palestras": "5",
-    "Eventos": "12",
+    "NovosClientes": "15",
+    "ClientesPerdidos": "8",
+    "Prospectados": "5"
   };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Engajamento"),
+        title: Text("Ganho de Mercado"),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,14 +202,14 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Mostrando os dados como texto fixo
-          _buildInfoRow("Mentorias:", info["Mentorias"]!, Icons.co_present),
+          _buildInfoRow(
+              "Novos Clientes:", info["NovosClientes"]!, Icons.co_present),
           SizedBox(height: 12),
-          _buildInfoRow("Cursos:", info["Cursos"]!, Icons.menu_book_rounded),
-          SizedBox(height: 12),
-          _buildInfoRow("Palestras:", info["Palestras"]!, Icons.cases_outlined),
+          _buildInfoRow("ClientesPerdidos:", info["ClientesPerdidos"]!,
+              Icons.menu_book_rounded),
           SizedBox(height: 12),
           _buildInfoRow(
-              "Eventos:", info["Eventos"]!, Icons.door_sliding_outlined),
+              "Prospectados:", info["Prospectados"]!, Icons.cases_outlined),
         ],
       ),
     );
