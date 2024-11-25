@@ -313,7 +313,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTextField(
-                title: "Novos Clientes",
+                title: "Mentorias",
                 value: "0",
                 onChanged: (newValue) {
                   print("Novo valor: $newValue");
@@ -321,7 +321,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
               ),
               SizedBox(height: 8),
               _buildTextField(
-                title: "Clientes Perdidos ",
+                title: "Cursos",
                 value: "0",
                 onChanged: (newValue) {
                   print("Novo valor: $newValue");
@@ -329,7 +329,15 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
               ),
               SizedBox(height: 8),
               _buildTextField(
-                title: "Prospectados",
+                title: "Palestras",
+                value: "0",
+                onChanged: (newValue) {
+                  print("Novo valor: $newValue");
+                },
+              ),
+              SizedBox(height: 8),
+              _buildTextField(
+                title: "Eventos",
                 value: "0",
                 onChanged: (newValue) {
                   print("Novo valor: $newValue");
