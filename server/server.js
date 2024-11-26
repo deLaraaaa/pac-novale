@@ -92,11 +92,96 @@ const updateCompany = async (req, res) => {
     }
 };
 
+const getEngagements = async (req, res) => {
+    const { companyId, startDate, endDate } = req.body;
+
+    if (!companyId || !startDate || !endDate) {
+        return res.status(400).send({ error: "Todos os campos são obrigatórios" });
+    }
+
+    console.log(
+        `Fetching engagements for companyId: ${companyId}, startDate: ${startDate}, endDate: ${endDate}`
+    );
+
+    try {
+        const engagementsRef = db
+            .collection("companies") // Certifique-se de que "companies" é o nome correto da sua coleção
+            .doc(companyId)
+            .collection("engagement");
+
+        console.log("Engagements reference created");
+
+        const snapshot = await engagementsRef
+            .where("monthYear", ">=", startDate)
+            .where("monthYear", "<=", endDate)
+            .get();
+
+        console.log(`Snapshot size: ${snapshot.size}`);
+
+        let newClients = 0;
+        let lostClients = 0;
+        let prospectedClients = 0;
+
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            console.log(`Found engagement: ${JSON.stringify(data)}`);
+            newClients += data.newClients || 0;
+            lostClients += data.lostClients || 0;
+            prospectedClients += data.prospectedClients || 0;
+        });
+
+        res.status(200).json({
+            newClients,
+            lostClients,
+            prospectedClients,
+        });
+    } catch (err) {
+        console.error("Erro ao buscar engajamentos:", err);
+        res.status(500).send({ error: "Erro ao buscar engajamentos", details: err.message });
+    }
+};
+
+const createEngagement = async (req, res) => {
+    const { companyId, monthYear, newClients, lostClients, prospectedClients } = req.body;
+
+    if (
+        !companyId ||
+        !monthYear ||
+        newClients === undefined ||
+        lostClients === undefined ||
+        prospectedClients === undefined
+    ) {
+        return res.status(400).send({ error: "Todos os campos são obrigatórios" });
+    }
+
+    try {
+        const engagementRef = db
+            .collection("companies") // Certifique-se de que "companies" é o nome correto da sua coleção
+            .doc(companyId)
+            .collection("engagement")
+            .doc(monthYear.replace("/", "-"));
+
+        await engagementRef.set({
+            newClients: Number(newClients),
+            lostClients: Number(lostClients),
+            prospectedClients: Number(prospectedClients),
+            timestamp: new Date(),
+        });
+
+        res.status(201).json({ message: "Engajamento criado com sucesso" });
+    } catch (err) {
+        console.error("Erro ao criar engajamento:", err);
+        res.status(500).send({ error: "Erro ao criar engajamento", details: err.message });
+    }
+};
+
 initializeCounter().then(() => {
     app.post('/create_companies', createCompany);
     app.get('/get_companies', getCompanies);
     app.delete('/delete_company', deleteCompany);
     app.put('/update_company', updateCompany);
+    app.post('/get_engagements', getEngagements);
+    app.post('/create_engagement', createEngagement);
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

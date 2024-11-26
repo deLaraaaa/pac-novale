@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MarketGainInfoScreen extends StatefulWidget {
+  final String companyId;
+
+  const MarketGainInfoScreen({Key? key, required this.companyId})
+      : super(key: key);
+
   @override
   _MarketGainInfoScreenState createState() => _MarketGainInfoScreenState();
 }
@@ -13,6 +20,11 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   DateTime? insertDate;
+
+  final TextEditingController newClientsController = TextEditingController();
+  final TextEditingController lostClientsController = TextEditingController();
+  final TextEditingController prospectedClientsController =
+      TextEditingController();
 
   // Método para selecionar apenas o mês e ano
   Future<void> _selectMonthYear(
@@ -43,15 +55,75 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
           }
         }
       });
+
+      if (selectedStartDate != null && selectedEndDate != null) {
+        fetchEngagements(widget.companyId);
+      }
     }
   }
 
   // Informações fictícias para demonstração
   final Map<String, String> info = {
-    "NovosClientes": "15",
-    "ClientesPerdidos": "8",
-    "Prospectados": "5",
+    "NovosClientes": "0",
+    "ClientesPerdidos": "0",
+    "Prospectados": "0",
   };
+
+  @override
+  void initState() {
+    super.initState();
+    fetchEngagements(widget.companyId);
+  }
+
+  Future<void> fetchEngagements(String companyId) async {
+    if (selectedStartDate == null || selectedEndDate == null) return;
+
+    final url = Uri.parse('http://localhost:3000/get_engagements');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'companyId': companyId,
+        'startDate': DateFormat('yyyy-MM').format(selectedStartDate!),
+        'endDate': DateFormat('yyyy-MM').format(selectedEndDate!),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        info['NovosClientes'] = data['newClients'].toString();
+        info['ClientesPerdidos'] = data['lostClients'].toString();
+        info['Prospectados'] = data['prospectedClients'].toString();
+      });
+    } else {
+      print('Failed to fetch engagements: ${response.body}');
+    }
+  }
+
+  Future<void> createEngagement() async {
+    if (insertDate == null) return;
+
+    final url = Uri.parse('http://localhost:3000/create_engagement');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'companyId': widget.companyId,
+        'monthYear': DateFormat('yyyy-MM').format(insertDate!),
+        'newClients': int.tryParse(newClientsController.text) ?? 0,
+        'lostClients': int.tryParse(lostClientsController.text) ?? 0,
+        'prospectedClients':
+            int.tryParse(prospectedClientsController.text) ?? 0,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print('Engagement created successfully');
+    } else {
+      print('Failed to create engagement: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,20 +319,22 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(title: "Novos Clientes", value: "0"),
+              _buildTextField(
+                  title: "Novos Clientes", controller: newClientsController),
               SizedBox(height: 8),
-              _buildTextField(title: "Clientes Perdidos", value: "0"),
+              _buildTextField(
+                  title: "Clientes Perdidos",
+                  controller: lostClientsController),
               SizedBox(height: 8),
-              _buildTextField(title: "Prospectados", value: "0"),
+              _buildTextField(
+                  title: "Prospectados",
+                  controller: prospectedClientsController),
             ],
           ),
           SizedBox(height: 50.0),
           // Botão de Salvar
           ElevatedButton(
-            onPressed: () {
-              // Ação ao salvar (aqui apenas um exemplo com print)
-              print("Informações salvas!");
-            },
+            onPressed: createEngagement,
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
               backgroundColor: Color(0xff00bfa5), // Cor do botão
@@ -321,8 +395,10 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
     );
   }
 
-  Widget _buildTextField({required String title, required String value}) {
+  Widget _buildTextField(
+      {required String title, required TextEditingController controller}) {
     return TextField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: title,
         border: OutlineInputBorder(

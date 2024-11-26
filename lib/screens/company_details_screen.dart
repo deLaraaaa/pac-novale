@@ -299,7 +299,9 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => MarketGainInfoScreen()),
+                              builder: (context) => MarketGainInfoScreen(
+                                  companyId: widget.companyId),
+                            ),
                           );
                         },
                       ),
