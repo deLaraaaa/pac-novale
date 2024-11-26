@@ -254,6 +254,28 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
               _buildTextField(title: "Prospectados", value: "0"),
             ],
           ),
+          SizedBox(height: 50.0),
+          // Botão de Salvar
+          ElevatedButton(
+            onPressed: () {
+              // Ação ao salvar (aqui apenas um exemplo com print)
+              print("Informações salvas!");
+            },
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
+              backgroundColor: Color(0xff00bfa5), // Cor do botão
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+            ),
+            child: Text(
+              "Salvar",
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+          ),
         ],
       ),
     );
