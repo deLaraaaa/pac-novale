@@ -35,15 +35,23 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
   }
 
   Future<void> updateCompany(DateTime? date, Map<String, int> values) async {
-    print({date, values});
+    if (date == null) {
+      print('Data não fornecida');
+      return;
+    }
+
+    final formattedDate =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}';
+    print({formattedDate, values});
     final url = Uri.parse('http://localhost:3000/update_companie_info');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'id': "10",
-        'date': date,
+        'date': formattedDate,
         'values': values,
+        'type': 'engagement'
       }),
     );
 
