@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 class MarketGainInfoScreen extends StatefulWidget {
   @override
@@ -13,21 +14,23 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
   DateTime? selectedEndDate;
   DateTime? insertDate;
 
-  Future<void> _selectDate(
+  // Método para selecionar apenas o mês e ano
+  Future<void> _selectMonthYear(
       BuildContext context, bool isStart, bool isInsert) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime? picked = await showMonthYearPicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2010),
       lastDate: DateTime(2050),
-      locale: Locale("pt", "BR"),
-      builder: (BuildContext context, Widget? child) {
+      locale: const Locale("pt", "BR"),
+      builder: (context, child) {
         return Theme(
-          data: ThemeData.light(), // Tema opcional
+          data: ThemeData.light(), // Adicione o tema, se necessário
           child: child!,
         );
       },
     );
+
     if (picked != null) {
       setState(() {
         if (isInsert) {
@@ -47,7 +50,7 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
   final Map<String, String> info = {
     "NovosClientes": "15",
     "ClientesPerdidos": "8",
-    "Prospectados": "5"
+    "Prospectados": "5",
   };
 
   @override
@@ -94,7 +97,7 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
                       Text("Mês e Ano de Entrada:"),
                       SizedBox(height: 8),
                       GestureDetector(
-                        onTap: () => _selectDate(context, true, false),
+                        onTap: () => _selectMonthYear(context, true, false),
                         child: Container(
                           padding: EdgeInsets.symmetric(
                               vertical: 12, horizontal: 16),
@@ -119,7 +122,7 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
                       Text("Mês e Ano de Saída:"),
                       SizedBox(height: 8),
                       GestureDetector(
-                        onTap: () => _selectDate(context, false, false),
+                        onTap: () => _selectMonthYear(context, false, false),
                         child: Container(
                           padding: EdgeInsets.symmetric(
                               vertical: 12, horizontal: 16),
@@ -194,18 +197,16 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
     );
   }
 
-  // Tela de "Exibir Informações"
   Widget _buildViewInformation() {
     return Padding(
       padding: const EdgeInsets.all(32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Mostrando os dados como texto fixo
           _buildInfoRow(
               "Novos Clientes:", info["NovosClientes"]!, Icons.co_present),
           SizedBox(height: 12),
-          _buildInfoRow("ClientesPerdidos:", info["ClientesPerdidos"]!,
+          _buildInfoRow("Clientes Perdidos:", info["ClientesPerdidos"]!,
               Icons.menu_book_rounded),
           SizedBox(height: 12),
           _buildInfoRow(
@@ -215,70 +216,6 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
     );
   }
 
-  void openEditDialog(String title, String content) async {
-    TextEditingController controller = TextEditingController(text: content);
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(32.0)),
-            ),
-            contentPadding: EdgeInsets.only(top: 10.0),
-            content: Container(
-              width: 300.0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Text(
-                      title,
-                      style: TextStyle(fontSize: 24.0),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Divider(color: Colors.grey, height: 20.0),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.0),
-                    child: TextField(
-                      controller: controller,
-                      maxLines: 5,
-                      decoration: InputDecoration(
-                        hintText: "Editar $title",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 15.0),
-                  InkWell(
-                    onTap: () => {},
-                    child: Container(
-                      padding: EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Color(0xff00bfa5),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(32.0),
-                          bottomRight: Radius.circular(32.0),
-                        ),
-                      ),
-                      child: Text(
-                        "Salvar",
-                        style: TextStyle(color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  // Tela de "Adicionar Informações"
   Widget _buildAddInformation() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 20.0),
@@ -290,7 +227,7 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
               Text("Selecionar a Data:"),
               SizedBox(height: 8),
               GestureDetector(
-                onTap: () => _selectDate(context, false, true),
+                onTap: () => _selectMonthYear(context, false, true),
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   decoration: BoxDecoration(
@@ -307,33 +244,14 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
             ],
           ),
           SizedBox(height: 24),
-          // Campos interativos
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(
-                title: "Novos Clientes",
-                value: "0",
-                onChanged: (newValue) {
-                  print("Novo valor: $newValue");
-                },
-              ),
+              _buildTextField(title: "Novos Clientes", value: "0"),
               SizedBox(height: 8),
-              _buildTextField(
-                title: "Clientes Perdidos ",
-                value: "0",
-                onChanged: (newValue) {
-                  print("Novo valor: $newValue");
-                },
-              ),
+              _buildTextField(title: "Clientes Perdidos", value: "0"),
               SizedBox(height: 8),
-              _buildTextField(
-                title: "Prospectados",
-                value: "0",
-                onChanged: (newValue) {
-                  print("Novo valor: $newValue");
-                },
-              ),
+              _buildTextField(title: "Prospectados", value: "0"),
             ],
           ),
         ],
@@ -341,28 +259,22 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
     );
   }
 
-  // Reaproveitamento do widget para mostrar informações como texto
   Widget _buildInfoRow(String label, String value, IconData icon) {
     return Card(
-      elevation: 3, // Adiciona uma sombra leve
+      elevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12), // Bordas arredondadas
+        borderRadius: BorderRadius.circular(12),
       ),
-      color: Color(0xff00bfa5), // Cor de fundo
+      color: Color(0xff00bfa5),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 14.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Ícone e texto do rótulo
             Row(
               children: [
-                Icon(
-                  icon, // Ícone dinâmico passado como parâmetro
-                  color: Colors.white,
-                  size: 28,
-                ),
-                SizedBox(width: 12), // Espaço entre o ícone e o texto
+                Icon(icon, color: Colors.white, size: 28),
+                SizedBox(width: 12),
                 Text(
                   label,
                   style: TextStyle(
@@ -373,7 +285,6 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
                 ),
               ],
             ),
-            // Valor
             Text(
               value,
               style: TextStyle(
@@ -388,55 +299,15 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
     );
   }
 
-  // Reaproveitamento do widget de TextField para entrada de dados
-  Widget _buildTextField({
-    required String title,
-    String? value,
-    Function(String)? onChanged,
-  }) {
-    return SizedBox(
-      width: double.infinity, // Faz o card ocupar a largura total
-      child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        elevation: 4,
-        color: const Color.fromARGB(255, 235, 235, 235),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 87, 87, 87),
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                initialValue:
-                    value ?? "0", // Exibe o valor inicial ou "0" por padrão
-                onChanged: onChanged, // Chama o callback quando o valor muda
-                decoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 8.0,
-                    horizontal: 12.0,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                style: const TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
+  Widget _buildTextField({required String title, required String value}) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: title,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
+      keyboardType: TextInputType.number,
     );
   }
 }
