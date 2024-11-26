@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
+import 'package:http/http.dart' as http;
 
 class EngagementInfoScreen extends StatefulWidget {
   @override
@@ -13,6 +15,46 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   DateTime? insertDate;
+  Map<String, TextEditingController> controllers = {};
+
+  Map<String, int> values = {
+    'mentorias': 0,
+    'cursos': 0,
+    'palestras': 0,
+    'eventos': 0,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Inicializa os controladores e valores para os campos
+    ['mentorias', 'cursos', 'palestras', 'eventos'].forEach((field) {
+      controllers[field] = TextEditingController(text: '0');
+    });
+  }
+
+  Future<void> updateCompany(DateTime? date, Map<String, int> values) async {
+    print({date, values});
+    final url = Uri.parse('http://localhost:3000/update_companie_info');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'id': "10",
+        'date': date,
+        'values': values,
+      }),
+    );
+
+    print(response);
+
+    //if (response.statusCode != 200) {
+    //  ScaffoldMessenger.of(context).showSnackBar(
+    //    SnackBar(content: Text('Failed to update company: ${response.body}')),
+    //  );
+    //}
+  }
 
   // Método para selecionar apenas o mês e ano
   Future<void> _selectMonthYear(
@@ -248,21 +290,20 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(title: "Mentorias", value: "0"),
+              _buildTextField(title: "Mentorias", value: "mentorias"),
               SizedBox(height: 8),
-              _buildTextField(title: "Cursos", value: "0"),
+              _buildTextField(title: "Cursos", value: "cursos"),
               SizedBox(height: 8),
-              _buildTextField(title: "Palestras", value: "0"),
+              _buildTextField(title: "Palestras", value: "palestras"),
               SizedBox(height: 8),
-              _buildTextField(title: "Eventos", value: "0"),
+              _buildTextField(title: "Eventos", value: "eventos"),
             ],
           ),
           SizedBox(height: 50.0),
           // Botão de Salvar
           ElevatedButton(
             onPressed: () {
-              // Ação ao salvar (aqui apenas um exemplo com print)
-              print("Informações salvas!");
+              updateCompany(insertDate, values);
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
@@ -326,6 +367,8 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
 
   Widget _buildTextField({required String title, required String value}) {
     return TextField(
+      controller: controllers[value],
+      onChanged: (item) => {values[value] = int.parse(item)},
       decoration: InputDecoration(
         labelText: title,
         border: OutlineInputBorder(

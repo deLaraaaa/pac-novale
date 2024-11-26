@@ -6,102 +6,143 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const counterRef = db.collection('metadata').doc('counters');
-const companyRef = db.collection('companies');
+const counterRef = db.collection("metadata").doc("counters");
+const companyRef = db.collection("companies");
+const engagementRef = db.collection("engagement");
 
 const initializeCounter = async () => {
-    const counterDoc = await counterRef.get();
-    if (!counterDoc.exists) {
-        await counterRef.set({ nextCompanyId: 1 });
-    }
+  const counterDoc = await counterRef.get();
+  if (!counterDoc.exists) {
+    await counterRef.set({ nextCompanyId: 1 });
+  }
 };
 
 const createCompany = async (req, res) => {
-    const data = { ...req.body, Activate: true };
+  const data = { ...req.body, Activate: true };
 
-    try {
-        let newCompanyId;
-        await db.runTransaction(async (transaction) => {
-            const counterDoc = await transaction.get(counterRef);
-            if (!counterDoc.exists) {
-                throw new Error('Counter document does not exist!');
-            }
+  try {
+    let newCompanyId;
+    await db.runTransaction(async (transaction) => {
+      const counterDoc = await transaction.get(counterRef);
+      if (!counterDoc.exists) {
+        throw new Error("Counter document does not exist!");
+      }
 
-            newCompanyId = counterDoc.data().nextCompanyId;
-            transaction.update(counterRef, { nextCompanyId: newCompanyId + 1 });
+      newCompanyId = counterDoc.data().nextCompanyId;
+      transaction.update(counterRef, { nextCompanyId: newCompanyId + 1 });
 
-            transaction.set(companyRef.doc(newCompanyId.toString()), data);
-        });
-        res.status(201).json({ message: 'Empresa criada com sucesso', id: newCompanyId });
-    } catch (err) {
-        res.status(400).send({ error: 'Erro ao criar empresa', details: err.message });
-    }
+      transaction.set(companyRef.doc(newCompanyId.toString()), data);
+    });
+    res
+      .status(201)
+      .json({ message: "Empresa criada com sucesso", id: newCompanyId });
+  } catch (err) {
+    res
+      .status(400)
+      .send({ error: "Erro ao criar empresa", details: err.message });
+  }
 };
 
 const getCompanies = async (req, res) => {
-    try {
-        const snapshot = await companyRef.where('Activate', '==', true).get();
-        const companies = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        res.status(200).json(companies);
-    } catch (err) {
-        res.status(500).send({ error: 'Erro ao buscar empresas', details: err.message });
-    }
+  try {
+    const snapshot = await companyRef.where("Activate", "==", true).get();
+    const companies = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.status(200).json(companies);
+  } catch (err) {
+    res
+      .status(500)
+      .send({ error: "Erro ao buscar empresas", details: err.message });
+  }
+};
+
+const updateCompanyInfo = async (req, res) => {
+  console.log("chegou");
+  const { id, date, values } = req.body;
+  console.log({ id, date, values });
+  //   const snapshot = await db
+  //     .collection("companies") // Acessa a coleção "companies"
+  //     .doc("10") // Acessa o documento com ID "10"
+  //     .collection("engagement") // Acessa a coleção "engagement" dentro do documento "10"
+  //     .get();
+  //   // Verifica se há documentos na coleção
+  //   if (snapshot.empty) {
+  //     console.log("Nenhum documento encontrado!");
+  //     return [];
+  //   }
+  //   const engagements = snapshot.docs.map((doc) => ({
+  //     id: doc.id, // O ID único do documento
+  //     ...doc.data(), // Os dados do documento
+  //   }));
+  //   console.log("Dados da coleção engagement:", engagements);
+  res.status(200).json({ message: "Entrou" });
 };
 
 const deleteCompany = async (req, res) => {
-    const companyId = req.body.id;
+  const companyId = req.body.id;
 
-    if (!companyId) {
-        return res.status(400).send({ error: 'ID da empresa é obrigatório' });
+  if (!companyId) {
+    return res.status(400).send({ error: "ID da empresa é obrigatório" });
+  }
+
+  try {
+    const companyDoc = companyRef.doc(companyId);
+    const doc = await companyDoc.get();
+
+    if (!doc.exists) {
+      return res.status(404).send({ error: "Empresa não encontrada" });
     }
 
-    try {
-        const companyDoc = companyRef.doc(companyId);
-        const doc = await companyDoc.get();
-
-        if (!doc.exists) {
-            return res.status(404).send({ error: 'Empresa não encontrada' });
-        }
-
-        await companyDoc.update({ Activate: false });
-        res.status(200).json({ message: 'Empresa desativada com sucesso' });
-    } catch (err) {
-        res.status(500).send({ error: 'Erro ao desativar empresa', details: err.message });
-    }
+    await companyDoc.update({ Activate: false });
+    res.status(200).json({ message: "Empresa desativada com sucesso" });
+  } catch (err) {
+    res
+      .status(500)
+      .send({ error: "Erro ao desativar empresa", details: err.message });
+  }
 };
 
 const updateCompany = async (req, res) => {
-    const { id, field, value } = req.body;
+  const { id, field, value } = req.body;
 
-    if (!id || !field || value === undefined) {
-        return res.status(400).send({ error: 'ID, campo e valor são obrigatórios' });
+  if (!id || !field || value === undefined) {
+    return res
+      .status(400)
+      .send({ error: "ID, campo e valor são obrigatórios" });
+  }
+
+  try {
+    const companyDoc = companyRef.doc(id);
+    const doc = await companyDoc.get();
+
+    if (!doc.exists) {
+      return res.status(404).send({ error: "Empresa não encontrada" });
     }
 
-    try {
-        const companyDoc = companyRef.doc(id);
-        const doc = await companyDoc.get();
-
-        if (!doc.exists) {
-            return res.status(404).send({ error: 'Empresa não encontrada' });
-        }
-
-        await companyDoc.update({ [field]: value });
-        res.status(200).json({ message: 'Empresa atualizada com sucesso' });
-    } catch (err) {
-        res.status(500).send({ error: 'Erro ao atualizar empresa', details: err.message });
-    }
+    await companyDoc.update({ [field]: value });
+    res.status(200).json({ message: "Empresa atualizada com sucesso" });
+  } catch (err) {
+    res
+      .status(500)
+      .send({ error: "Erro ao atualizar empresa", details: err.message });
+  }
 };
 
-initializeCounter().then(() => {
-    app.post('/create_companies', createCompany);
-    app.get('/get_companies', getCompanies);
-    app.delete('/delete_company', deleteCompany);
-    app.put('/update_company', updateCompany);
+initializeCounter()
+  .then(() => {
+    app.post("/create_companies", createCompany);
+    app.get("/get_companies", getCompanies);
+    app.delete("/delete_company", deleteCompany);
+    app.put("/update_company", updateCompany);
+    app.put("/update_companie_info", updateCompanyInfo);
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {
-        console.log(`Servidor rodando na porta ${PORT}`);
+      console.log(`Servidor rodando na porta ${PORT}`);
     });
-}).catch(err => {
-    console.error('Failed to initialize counter:', err);
-});
+  })
+  .catch((err) => {
+    console.error("Failed to initialize counter:", err);
+  });
