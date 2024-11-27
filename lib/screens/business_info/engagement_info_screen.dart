@@ -13,6 +13,54 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   DateTime? insertDate;
+  Map<String, TextEditingController> controllers = {};
+
+  Map<String, int> values = {
+    'mentorias': 0,
+    'cursos': 0,
+    'palestras': 0,
+    'eventos': 0,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Inicializa os controladores e valores para os campos
+    ['mentorias', 'cursos', 'palestras', 'eventos'].forEach((field) {
+      controllers[field] = TextEditingController(text: '0');
+    });
+  }
+
+  Future<void> updateCompany(DateTime? date, Map<String, int> values) async {
+    if (date == null) {
+      print('Data não fornecida');
+      return;
+    }
+
+    final formattedDate =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}';
+    print({formattedDate, values});
+    final url = Uri.parse('http://localhost:3000/update_companie_info');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'id': "10",
+        'date': formattedDate,
+        'values': values,
+        'type': 'engagement'
+      }),
+    );
+
+    print(response);
+
+    //if (response.statusCode != 200) {
+    //  ScaffoldMessenger.of(context).showSnackBar(
+    //    SnackBar(content: Text('Failed to update company: ${response.body}')),
+    //  );
+    //}
+  }
 
   // Método para selecionar apenas o mês e ano
   Future<void> _selectMonthYear(
