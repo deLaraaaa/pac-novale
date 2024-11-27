@@ -288,7 +288,9 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                              builder: (context) => EngagementInfoScreen(
+                                  companyId: widget.companyId),
+                            ),
                           );
                         },
                       ),
@@ -312,7 +314,9 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                              builder: (context) => EngagementInfoScreen(
+                                  companyId: widget.companyId),
+                            ),
                           );
                         },
                       ),
@@ -323,7 +327,9 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                              builder: (context) => EngagementInfoScreen(
+                                  companyId: widget.companyId),
+                            ),
                           );
                         },
                       ),
@@ -334,7 +340,9 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                              builder: (context) => EngagementInfoScreen(
+                                  companyId: widget.companyId),
+                            ),
                           );
                         },
                       ),
@@ -345,7 +353,9 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                              builder: (context) => EngagementInfoScreen(
+                                  companyId: widget.companyId),
+                            ),
                           );
                         },
                       ),

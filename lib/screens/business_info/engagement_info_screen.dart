@@ -5,6 +5,11 @@ import 'package:month_year_picker/month_year_picker.dart';
 import 'package:http/http.dart' as http;
 
 class EngagementInfoScreen extends StatefulWidget {
+  final String companyId;
+
+  const EngagementInfoScreen({Key? key, required this.companyId})
+      : super(key: key);
+
   @override
   _EngagementInfoScreenState createState() => _EngagementInfoScreenState();
 }
@@ -58,7 +63,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'id': '10',
+        'id': widget.companyId,
         'type': "engagement",
         'startDate': startDate.toIso8601String(),
         'endDate': endDate.toIso8601String(),
@@ -128,7 +133,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'id': "10",
+        'id': widget.companyId,
         'date': date.toIso8601String(),
         'values': values,
         'type': 'engagement'
