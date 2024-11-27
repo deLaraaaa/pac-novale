@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
+import 'package:http/http.dart' as http;
 
 class EngagementInfoScreen extends StatefulWidget {
   @override
@@ -32,22 +34,102 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
     });
   }
 
+  int _parseToInt(dynamic value) {
+    try {
+      // Verifica se o valor é um número ou uma string que pode ser convertida para inteiro
+      if (value != null) {
+        return int.tryParse(value.toString()) ??
+            0; // Retorna 0 se não conseguir parsear
+      }
+    } catch (e) {
+      print("Erro ao parsear o valor: $value. Erro: $e");
+    }
+    return 0; // Retorna 0 em caso de erro
+  }
+
+  Future<void> getCompanieInfo(DateTime? startDate, DateTime? endDate) async {
+    if (startDate == null || endDate == null) {
+      print('Datas não fornecidas');
+      return;
+    }
+
+    final url = Uri.parse('http://localhost:3000/get_info_by_type');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'id': '10',
+        'type': "engagement",
+        'startDate': startDate.toIso8601String(),
+        'endDate': endDate.toIso8601String(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic> data = responseData['data'];
+      // Inicializa variáveis para soma e média
+      int totalMentorias = 0;
+      int totalCursos = 0;
+      int totalPalestras = 0;
+      int totalEventos = 0;
+      int count = 0; // Para contar quantos itens são válidos para média
+      // Itera sobre os dados recebidos
+      for (var item in data) {
+        // Verifica se a chave 'date' existe e é válida
+        if (item.containsKey('date') && item['date'] != null) {
+          try {
+            final itemDate = DateTime.parse(item['date']);
+
+            // Verifica se a data está no intervalo correto (inclusive as datas de início e fim)
+            if (!itemDate.isBefore(startDate) && !itemDate.isAfter(endDate)) {
+              // Verifica e converte os valores de mentoria, cursos, palestras e eventos para inteiros
+              totalMentorias += _parseToInt(item['mentorias']);
+              totalCursos += _parseToInt(item['cursos']);
+              totalPalestras += _parseToInt(item['palestras']);
+              totalEventos += _parseToInt(item['eventos']);
+
+              count++; // Incrementa o contador de elementos válidos
+            }
+          } catch (e) {
+            print("Erro ao parsear a data: ${item['date']}. Erro: $e");
+          }
+        } else {
+          print("Data não encontrada para o item: $item");
+        }
+      }
+
+      setState(() {
+        if (showAverage && count > 0) {
+          values['mentorias'] = (totalMentorias / count).round();
+          values['cursos'] = (totalCursos / count).round();
+          values['palestras'] = (totalPalestras / count).round();
+          values['eventos'] = (totalEventos / count).round();
+        } else {
+          values['mentorias'] = totalMentorias;
+          values['cursos'] = totalCursos;
+          values['palestras'] = totalPalestras;
+          values['eventos'] = totalEventos;
+        }
+      });
+    } else {
+      print('Erro ao buscar informações: ${response.body}');
+    }
+  }
+
   Future<void> updateCompany(DateTime? date, Map<String, int> values) async {
     if (date == null) {
       print('Data não fornecida');
       return;
     }
 
-    final formattedDate =
-        '${date.year}-${date.month.toString().padLeft(2, '0')}';
-    print({formattedDate, values});
     final url = Uri.parse('http://localhost:3000/update_companie_info');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'id': "10",
-        'date': formattedDate,
+        'date': date.toIso8601String(),
         'values': values,
         'type': 'engagement'
       }),
@@ -59,7 +141,6 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
     //  ScaffoldMessenger.of(context).showSnackBar(
     //    SnackBar(content: Text('Failed to update company: ${response.body}')),
     //  );
-    //}
   }
 
   // Método para selecionar apenas o mês e ano
@@ -193,6 +274,36 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
             ),
           // Adicionando o switch de "Média" e "Soma" aqui
           if (showViewMode) _buildCalculationSwitch(),
+          SizedBox(height: 20.0),
+          if (showViewMode)
+            Center(
+              // Adicionando o widget Center para centralizar o botão
+              child: ElevatedButton(
+                onPressed: () {
+                  if (selectedStartDate != null &&
+                      selectedEndDate != null &&
+                      (selectedEndDate!.isAtSameMomentAs(selectedStartDate!) ||
+                          selectedEndDate!.isAfter(selectedStartDate!))) {
+                    getCompanieInfo(selectedStartDate, selectedEndDate);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
+                  backgroundColor: Color(0xffaba3cc), // Cor do botão
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                child: Text(
+                  "Listar",
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ),
+            ),
           // Exibe a tela correspondente com base no estado do switch
           Expanded(
             child:
@@ -252,14 +363,17 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow("Mentorias:", info["Mentorias"]!, Icons.co_present),
-          SizedBox(height: 12),
-          _buildInfoRow("Cursos:", info["Cursos"]!, Icons.menu_book_rounded),
-          SizedBox(height: 12),
-          _buildInfoRow("Palestras:", info["Palestras"]!, Icons.cases_outlined),
+          _buildInfoRow(
+              "Mentorias:", values['mentorias'].toString(), Icons.co_present),
           SizedBox(height: 12),
           _buildInfoRow(
-              "Eventos:", info["Eventos"]!, Icons.door_sliding_outlined),
+              "Cursos:", values['cursos'].toString(), Icons.menu_book_rounded),
+          SizedBox(height: 12),
+          _buildInfoRow("Palestras:", values['palestras'].toString(),
+              Icons.cases_outlined),
+          SizedBox(height: 12),
+          _buildInfoRow("Eventos:", values['eventos'].toString(),
+              Icons.door_sliding_outlined),
         ],
       ),
     );
@@ -296,21 +410,20 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(title: "Mentorias", value: "0"),
+              _buildTextField(title: "Mentorias", value: "mentorias"),
               SizedBox(height: 8),
-              _buildTextField(title: "Cursos", value: "0"),
+              _buildTextField(title: "Cursos", value: "cursos"),
               SizedBox(height: 8),
-              _buildTextField(title: "Palestras", value: "0"),
+              _buildTextField(title: "Palestras", value: "palestras"),
               SizedBox(height: 8),
-              _buildTextField(title: "Eventos", value: "0"),
+              _buildTextField(title: "Eventos", value: "eventos"),
             ],
           ),
           SizedBox(height: 50.0),
           // Botão de Salvar
           ElevatedButton(
             onPressed: () {
-              // Ação ao salvar (aqui apenas um exemplo com print)
-              print("Informações salvas!");
+              updateCompany(insertDate, values);
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
@@ -374,6 +487,8 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
 
   Widget _buildTextField({required String title, required String value}) {
     return TextField(
+      controller: controllers[value],
+      onChanged: (item) => {values[value] = int.parse(item)},
       decoration: InputDecoration(
         labelText: title,
         border: OutlineInputBorder(
