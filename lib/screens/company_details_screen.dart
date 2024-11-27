@@ -3,6 +3,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:pac_novale/screens/business_info/customer_loss_info_screen.dart';
+import 'package:pac_novale/screens/business_info/income_info_screen.dart';
+import 'package:pac_novale/screens/business_info/outcome_info_screen.dart';
+import 'package:pac_novale/screens/business_info/employee_info_screen.dart';
 import 'package:pac_novale/screens/business_info/market_gain_info_screen.dart';
 import 'business_info/engagement_info_screen.dart';
 
@@ -312,7 +316,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                                builder: (context) => EmployeeInfoScreen()),
                           );
                         },
                       ),
@@ -323,7 +327,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                                builder: (context) => OutcomeInfoScreen()),
                           );
                         },
                       ),
@@ -334,7 +338,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                                builder: (context) => IncomeInfoScreen()),
                           );
                         },
                       ),
@@ -345,7 +349,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EngagementInfoScreen()),
+                                builder: (context) => CustomerLossInfoScreen()),
                           );
                         },
                       ),
