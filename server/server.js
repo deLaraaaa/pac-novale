@@ -58,6 +58,56 @@ const getCompanies = async (req, res) => {
     }
 };
 
+const deleteCompany = async (req, res) => {
+    const companyId = req.body.id;
+
+    if (!companyId) {
+        return res.status(400).send({ error: "ID da empresa é obrigatório" });
+    }
+
+    try {
+        const companyDoc = companyRef.doc(companyId);
+        const doc = await companyDoc.get();
+
+        if (!doc.exists) {
+            return res.status(404).send({ error: "Empresa não encontrada" });
+        }
+
+        await companyDoc.update({ Activate: false });
+        res.status(200).json({ message: "Empresa desativada com sucesso" });
+    } catch (err) {
+        res
+            .status(500)
+            .send({ error: "Erro ao desativar empresa", details: err.message });
+    }
+};
+
+const updateCompany = async (req, res) => {
+    const { id, field, value } = req.body;
+
+    if (!id || !field || value === undefined) {
+        return res
+            .status(400)
+            .send({ error: "ID, campo e valor são obrigatórios" });
+    }
+
+    try {
+        const companyDoc = companyRef.doc(id);
+        const doc = await companyDoc.get();
+
+        if (!doc.exists) {
+            return res.status(404).send({ error: "Empresa não encontrada" });
+        }
+
+        await companyDoc.update({ [field]: value });
+        res.status(200).json({ message: "Empresa atualizada com sucesso" });
+    } catch (err) {
+        res
+            .status(500)
+            .send({ error: "Erro ao atualizar empresa", details: err.message });
+    }
+};
+
 const getInfoByType = async (req, res) => {
     const { id, type, startDate, endDate } = req.body;
     console.log({ id, type, startDate, endDate });
@@ -154,53 +204,251 @@ const updateCompanyInfo = async (req, res) => {
     }
 };
 
-const deleteCompany = async (req, res) => {
-    const companyId = req.body.id;
+const updateMarketGain = async (req, res) => {
+    const { id, date, values, type } = req.body; // Dados enviados no corpo da requisição
 
-    if (!companyId) {
-        return res.status(400).send({ error: "ID da empresa é obrigatório" });
+    // Verificar se todos os campos obrigatórios estão presentes
+    if (!id || !date || !values || !type) {
+        return res
+            .status(400)
+            .send({ error: "ID, date, values e type são obrigatórios" });
     }
 
     try {
-        const companyDoc = companyRef.doc(companyId);
-        const doc = await companyDoc.get();
+        // Extrair ano e mês do campo `date`
+        const yearMonth = date.slice(0, 7); // Assume que a data está no formato ISO "YYYY-MM-DD"
 
-        if (!doc.exists) {
+        // Referência ao documento da empresa
+        const companyDocRef = db.collection("companies").doc(id);
+
+        // Verificar se o documento existe
+        const companyDoc = await companyDocRef.get();
+        if (!companyDoc.exists) {
             return res.status(404).send({ error: "Empresa não encontrada" });
         }
 
-        await companyDoc.update({ Activate: false });
-        res.status(200).json({ message: "Empresa desativada com sucesso" });
+        // Referência à subcoleção "marketGain"
+        const engagementRef = companyDocRef.collection("marketGain");
+
+        // Preparar os dados a serem adicionados ou atualizados
+        const newEngagement = {
+            date: date,
+            newClients: values.newClients || 0,
+            lostClients: values.lostClients || 0,
+            prospects: values.prospects || 0,
+        };
+
+        // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+        await engagementRef.doc(yearMonth).set(newEngagement);
+
+        // Retornar sucesso
+        res.status(200).json({
+            message: "Engagement atualizado com sucesso",
+            data: newEngagement,
+        });
     } catch (err) {
+        console.error("Erro ao atualizar o documento:", err);
         res
             .status(500)
-            .send({ error: "Erro ao desativar empresa", details: err.message });
+            .send({ error: "Erro ao atualizar engagement", details: err.message });
     }
 };
 
-const updateCompany = async (req, res) => {
-    const { id, field, value } = req.body;
+const updateEmployee = async (req, res) => {
+    const { id, date, values, type } = req.body; // Dados enviados no corpo da requisição
 
-    if (!id || !field || value === undefined) {
+    // Verificar se todos os campos obrigatórios estão presentes
+    if (!id || !date || !values || !type) {
         return res
             .status(400)
-            .send({ error: "ID, campo e valor são obrigatórios" });
+            .send({ error: "ID, date, values e type são obrigatórios" });
     }
 
     try {
-        const companyDoc = companyRef.doc(id);
-        const doc = await companyDoc.get();
+        // Extrair ano e mês do campo `date`
+        const yearMonth = date.slice(0, 7); // Assume que a data está no formato ISO "YYYY-MM-DD"
 
-        if (!doc.exists) {
+        // Referência ao documento da empresa
+        const companyDocRef = db.collection("companies").doc(id);
+
+        // Verificar se o documento existe
+        const companyDoc = await companyDocRef.get();
+        if (!companyDoc.exists) {
             return res.status(404).send({ error: "Empresa não encontrada" });
         }
 
-        await companyDoc.update({ [field]: value });
-        res.status(200).json({ message: "Empresa atualizada com sucesso" });
+        // Referência à subcoleção "marketGain"
+        const engagementRef = companyDocRef.collection("employee");
+
+        // Preparar os dados a serem adicionados ou atualizados
+        const newEngagement = {
+            date: date,
+            employeeQuantity: values.employeeQuantity || 0,
+        };
+
+        // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+        await engagementRef.doc(yearMonth).set(newEngagement);
+
+        // Retornar sucesso
+        res.status(200).json({
+            message: "Engagement atualizado com sucesso",
+            data: newEngagement,
+        });
     } catch (err) {
+        console.error("Erro ao atualizar o documento:", err);
         res
             .status(500)
-            .send({ error: "Erro ao atualizar empresa", details: err.message });
+            .send({ error: "Erro ao atualizar engagement", details: err.message });
+    }
+};
+
+const updateCost = async (req, res) => {
+    const { id, date, values, type } = req.body; // Dados enviados no corpo da requisição
+
+    // Verificar se todos os campos obrigatórios estão presentes
+    if (!id || !date || !values || !type) {
+        return res
+            .status(400)
+            .send({ error: "ID, date, values e type são obrigatórios" });
+    }
+
+    try {
+        // Extrair ano e mês do campo `date`
+        const yearMonth = date.slice(0, 7); // Assume que a data está no formato ISO "YYYY-MM-DD"
+
+        // Referência ao documento da empresa
+        const companyDocRef = db.collection("companies").doc(id);
+
+        // Verificar se o documento existe
+        const companyDoc = await companyDocRef.get();
+        if (!companyDoc.exists) {
+            return res.status(404).send({ error: "Empresa não encontrada" });
+        }
+
+        // Referência à subcoleção "marketGain"
+        const engagementRef = companyDocRef.collection("cost");
+
+        // Preparar os dados a serem adicionados ou atualizados
+        const newEngagement = {
+            date: date,
+            paper: values.paper || 0,
+            structure: values.structure || 0,
+            tax: values.tax || 0,
+            accounting: values.accounting || 0,
+        };
+
+        // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+        await engagementRef.doc(yearMonth).set(newEngagement);
+
+        // Retornar sucesso
+        res.status(200).json({
+            message: "Engagement atualizado com sucesso",
+            data: newEngagement,
+        });
+    } catch (err) {
+        console.error("Erro ao atualizar o documento:", err);
+        res
+            .status(500)
+            .send({ error: "Erro ao atualizar engagement", details: err.message });
+    }
+};
+
+const updateBilling = async (req, res) => {
+    const { id, date, values, type } = req.body; // Dados enviados no corpo da requisição
+
+    // Verificar se todos os campos obrigatórios estão presentes
+    if (!id || !date || !values || !type) {
+        return res
+            .status(400)
+            .send({ error: "ID, date, values e type são obrigatórios" });
+    }
+
+    try {
+        // Extrair ano e mês do campo `date`
+        const yearMonth = date.slice(0, 7); // Assume que a data está no formato ISO "YYYY-MM-DD"
+
+        // Referência ao documento da empresa
+        const companyDocRef = db.collection("companies").doc(id);
+
+        // Verificar se o documento existe
+        const companyDoc = await companyDocRef.get();
+        if (!companyDoc.exists) {
+            return res.status(404).send({ error: "Empresa não encontrada" });
+        }
+
+        // Referência à subcoleção "marketGain"
+        const engagementRef = companyDocRef.collection("billing");
+
+        // Preparar os dados a serem adicionados ou atualizados
+        const newEngagement = {
+            date: date,
+            billing: values.billing || 0,
+        };
+
+        // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+        await engagementRef.doc(yearMonth).set(newEngagement);
+
+        // Retornar sucesso
+        res.status(200).json({
+            message: "Engagement atualizado com sucesso",
+            data: newEngagement,
+        });
+    } catch (err) {
+        console.error("Erro ao atualizar o documento:", err);
+        res
+            .status(500)
+            .send({ error: "Erro ao atualizar engagement", details: err.message });
+    }
+};
+
+const updateChurn = async (req, res) => {
+    const { id, date, values, type } = req.body; // Dados enviados no corpo da requisição
+
+    // Verificar se todos os campos obrigatórios estão presentes
+    if (!id || !date || !values || !type) {
+        return res
+            .status(400)
+            .send({ error: "ID, date, values e type são obrigatórios" });
+    }
+
+    try {
+        // Extrair ano e mês do campo `date`
+        const yearMonth = date.slice(0, 7); // Assume que a data está no formato ISO "YYYY-MM-DD"
+
+        // Referência ao documento da empresa
+        const companyDocRef = db.collection("companies").doc(id);
+
+        // Verificar se o documento existe
+        const companyDoc = await companyDocRef.get();
+        if (!companyDoc.exists) {
+            return res.status(404).send({ error: "Empresa não encontrada" });
+        }
+
+        // Referência à subcoleção "marketGain"
+        const engagementRef = companyDocRef.collection("billing");
+
+        // Preparar os dados a serem adicionados ou atualizados
+        const newEngagement = {
+            date: date,
+            service: values.service || 0,
+            price: values.price || 0,
+            outdate: values.outdate || 0,
+            inadequacy: values.inadequacy || 0,
+        };
+
+        // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+        await engagementRef.doc(yearMonth).set(newEngagement);
+
+        // Retornar sucesso
+        res.status(200).json({
+            message: "Engagement atualizado com sucesso",
+            data: newEngagement,
+        });
+    } catch (err) {
+        console.error("Erro ao atualizar o documento:", err);
+        res
+            .status(500)
+            .send({ error: "Erro ao atualizar engagement", details: err.message });
     }
 };
 
@@ -212,6 +460,11 @@ initializeCounter()
         app.put("/update_company", updateCompany);
         app.put("/update_companie_info", updateCompanyInfo);
         app.post("/get_info_by_type", getInfoByType);
+        app.put("/update_market_gain", updateMarketGain);
+        app.put("/update_employee", updateEmployee);
+        app.put("/update_cost", updateCost);
+        app.put("/update_billing", updateBilling);
+        app.put("/update_churn", updateChurn);
 
         const PORT = process.env.PORT || 3000;
         app.listen(PORT, () => {
