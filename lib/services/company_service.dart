@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 typedef CompanyData = Map<String, dynamic>;
 
 class CompanyService {
-  static const String _baseUrl = 'http://localhost:3000/companies';
+  static const String _baseUrl = 'http://10.0.2.2:3000/companies';
   static final CompanyService _instance = CompanyService._internal();
 
   factory CompanyService() {

@@ -58,7 +58,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       return;
     }
 
-    final url = Uri.parse('http://localhost:3000/get_info_by_type');
+    final url = Uri.parse('http://10.0.2.2:3000/get_info_by_type');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -128,7 +128,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       return;
     }
 
-    final url = Uri.parse('http://localhost:3000/update_companie_info');
+    final url = Uri.parse('http://10.0.2.2:3000/update_companie_info');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -194,127 +194,128 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       appBar: AppBar(
         title: Text("Engajamento"),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Switch para alternar entre Exibir e Adicionar Informações
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Modo atual: ${showViewMode ? "Somente exibir informações." : "Manipular e editar informações."}",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Switch(
-                  value: showViewMode,
-                  onChanged: (value) {
-                    setState(() {
-                      showViewMode = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-          if (showViewMode)
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Switch para alternar entre Exibir e Adicionar Informações
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
+                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Botão para selecionar Data de Entrada
-                  Column(
-                    children: [
-                      Text("Mês e Ano de Entrada:"),
-                      SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () => _selectMonthYear(context, true, false),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            selectedStartDate != null
-                                ? DateFormat("MM/yyyy")
-                                    .format(selectedStartDate!)
-                                : "Selecione o mês e ano",
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    "Modo atual: ${showViewMode ? "Somente exibir informações." : "Manipular e editar informações."}",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(width: 24.0),
-                  // Botão para selecionar Data de Saída
-                  Column(
-                    children: [
-                      Text("Mês e Ano de Saída:"),
-                      SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () => _selectMonthYear(context, false, false),
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            selectedEndDate != null
-                                ? DateFormat("MM/yyyy").format(selectedEndDate!)
-                                : "Selecione o mês e ano",
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
+                  Switch(
+                    value: showViewMode,
+                    onChanged: (value) {
+                      setState(() {
+                        showViewMode = value;
+                      });
+                    },
+                  ),
                 ],
               ),
             ),
-          // Adicionando o switch de "Média" e "Soma" aqui
-          if (showViewMode) _buildCalculationSwitch(),
-          SizedBox(height: 20.0),
-          if (showViewMode)
-            Center(
-              // Adicionando o widget Center para centralizar o botão
-              child: ElevatedButton(
-                onPressed: () {
-                  if (selectedStartDate != null &&
-                      selectedEndDate != null &&
-                      (selectedEndDate!.isAtSameMomentAs(selectedStartDate!) ||
-                          selectedEndDate!.isAfter(selectedStartDate!))) {
-                    getCompanieInfo(selectedStartDate, selectedEndDate);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
-                  backgroundColor: Color(0xffaba3cc), // Cor do botão
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Text(
-                  "Listar",
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+            if (showViewMode)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0, vertical: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Botão para selecionar Data de Entrada
+                    Column(
+                      children: [
+                        Text("Mês e Ano de Entrada:"),
+                        SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () => _selectMonthYear(context, true, false),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              selectedStartDate != null
+                                  ? DateFormat("MM/yyyy")
+                                      .format(selectedStartDate!)
+                                  : "Selecione o mês e ano",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 24.0),
+                    // Botão para selecionar Data de Saída
+                    Column(
+                      children: [
+                        Text("Mês e Ano de Saída:"),
+                        SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () => _selectMonthYear(context, false, false),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              selectedEndDate != null
+                                  ? DateFormat("MM/yyyy")
+                                      .format(selectedEndDate!)
+                                  : "Selecione o mês e ano",
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
               ),
-            ),
-          // Exibe a tela correspondente com base no estado do switch
-          Expanded(
-            child:
-                showViewMode ? _buildViewInformation() : _buildAddInformation(),
-          ),
-        ],
+            // Adicionando o switch de "Média" e "Soma" aqui
+            if (showViewMode) _buildCalculationSwitch(),
+            SizedBox(height: 20.0),
+            if (showViewMode)
+              Center(
+                // Adicionando o widget Center para centralizar o botão
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (selectedStartDate != null &&
+                        selectedEndDate != null &&
+                        (selectedEndDate!
+                                .isAtSameMomentAs(selectedStartDate!) ||
+                            selectedEndDate!.isAfter(selectedStartDate!))) {
+                      getCompanieInfo(selectedStartDate, selectedEndDate);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
+                    backgroundColor: Color(0xffaba3cc), // Cor do botão
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  child: Text(
+                    "Listar",
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
+              ),
+            // Exibe a tela correspondente com base no estado do switch
+            showViewMode ? _buildViewInformation() : _buildAddInformation(),
+          ],
+        ),
       ),
     );
   }
@@ -329,7 +330,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
         ),
         color: Color.fromARGB(255, 230, 255, 252),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 20.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
