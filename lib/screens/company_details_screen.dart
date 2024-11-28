@@ -233,6 +233,72 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
     );
   }
 
+  Widget buildDropdownCard(
+      BuildContext context,
+      String title,
+      String content,
+      List<String> options,
+      Function(String) onOptionSelected,
+      ) {
+    return GestureDetector(
+      onLongPress: () => openDropdownDialog(context, title, content, options, onOptionSelected),
+      child: SizedBox(
+        width: double.infinity,
+        child: Card(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          elevation: 4,
+          color: const Color.fromARGB(255, 241, 241, 241),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              '$title: $content',
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void openDropdownDialog(
+      BuildContext context,
+      String title,
+      String currentValue,
+      List<String> options,
+      Function(String) onOptionSelected,
+      ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String selectedValue = currentValue;
+
+        return AlertDialog(
+          title: Text('Selecione um valor para $title'),
+          content: DropdownButton<String>(
+            value: selectedValue,
+            isExpanded: true,
+            items: options.map((String option) {
+              return DropdownMenuItem<String>(
+                value: option,
+                child: Text(option),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              if (newValue != null) {
+                selectedValue = newValue;
+                Navigator.of(context).pop(); // Fecha o diálogo
+                onOptionSelected(newValue); // Chama a função de atualização
+              }
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final companyDetails = widget.companyDetails;
@@ -261,13 +327,35 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                 buildTextCard('Inovação',
                     companyDetails['Inovation'] ?? 'Não disponível'),
                 buildTextCard(
-                    'Estágio', companyDetails['Status'] ?? 'Não disponível'),
-                buildTextCard(
                     'Entrada', companyDetails['EntryDate'] ?? 'Não disponível'),
                 buildTextCard(
                     'Saída', companyDetails['ExitDate'] ?? 'Não disponível'),
-                buildTextCard(
-                    'Tipo', companyDetails['Type'] ?? 'Não disponível'),
+                buildDropdownCard(
+                  context,
+                  'Tipo',
+                  companyDetails['Type'] ?? 'Pendente',
+                  ['Incubada', 'Coworking', 'Âncora'],
+                      (String newValue) async {
+                    // Atualiza os dados no servidor e no estado local
+                    await updateCompany('Tipo', newValue);
+                    setState(() {
+                      companyDetails['Type'] = newValue;
+                    });
+                  },
+                ),
+                buildDropdownCard(
+                  context,
+                  'Estágio',
+                  companyDetails['Status'] ?? 'Pendente',
+                  ['Ideação', 'Operação', 'Tração', 'Scale-Up'],
+                      (String newValue) async {
+                    // Atualiza os dados no servidor e no estado local
+                    await updateCompany('Estágio', newValue);
+                    setState(() {
+                      companyDetails['Status'] = newValue;
+                    });
+                  },
+                ),
                 const Divider(
                   height: 40,
                   thickness: 2,
