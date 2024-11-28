@@ -78,7 +78,7 @@ class _MarketGainInfoScreenState extends State<MarketGainInfoScreen> {
   Future<void> fetchEngagements(String companyId) async {
     if (selectedStartDate == null || selectedEndDate == null) return;
 
-    final url = Uri.parse('http://localhost:3000/get_engagements');
+    final url = Uri.parse('http://10.0.2.2:3000/get_engagements');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},

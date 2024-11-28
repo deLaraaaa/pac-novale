@@ -58,7 +58,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       return;
     }
 
-    final url = Uri.parse('http://localhost:3000/get_info_by_type');
+    final url = Uri.parse('http://10.0.2.2:3000/get_info_by_type');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -128,7 +128,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       return;
     }
 
-    final url = Uri.parse('http://localhost:3000/update_companie_info');
+    final url = Uri.parse('http://10.0.2.2:3000/update_companie_info');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -140,15 +140,8 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       }),
     );
 
-    print(response);
-
-    //if (response.statusCode != 200) {
-    //  ScaffoldMessenger.of(context).showSnackBar(
-    //    SnackBar(content: Text('Failed to update company: ${response.body}')),
-    //  );
   }
 
-  // Método para selecionar apenas o mês e ano
   Future<void> _selectMonthYear(
       BuildContext context, bool isStart, bool isInsert) async {
     final DateTime? picked = await showMonthYearPicker(
@@ -180,7 +173,6 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
     }
   }
 
-  // Informações fictícias para demonstração
   final Map<String, String> info = {
     "Mentorias": "15",
     "Cursos": "8",
@@ -321,7 +313,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
 
   Widget _buildCalculationSwitch() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 120.0, vertical: 5.0),
+      padding: const EdgeInsets.symmetric(horizontal: 80.0, vertical: 5.0),
       child: Card(
         elevation: 3, // Adiciona uma sombra leve
         shape: RoundedRectangleBorder(
