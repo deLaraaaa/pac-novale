@@ -145,7 +145,7 @@ const updateCompanyInfo = async (req, res) => {
         data: newEngagement,
       });
     } else if (type == "marketGain") {
-      // Referência à subcoleção "engagement"
+      // Referência à subcoleção "marketGain"
       const marketGainRef = companyDocRef.collection("marketGain");
       // Preparar os dados a serem adicionados ou atualizados
       const newMarketGain = {
@@ -161,6 +161,76 @@ const updateCompanyInfo = async (req, res) => {
         message: "MarketGain atualizado com sucesso",
         data: newMarketGain,
       });
+    } else if (type == "employee") {
+      // Referência à subcoleção "employee"
+      const employeeRef = companyDocRef.collection("employee");
+      // Preparar os dados a serem adicionados ou atualizados
+      const newEmployee = {
+        date: date,
+        funcionarios: values.funcionarios || 0,
+      };
+      // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+      await employeeRef.doc(yearMonth).set(newEmployee);
+      // Retornar sucesso
+      res.status(200).json({
+        message: "employee atualizado com sucesso",
+        data: newEmployee,
+      });
+    } else if (type == "outcome") {
+      // Referência à subcoleção "outcome"
+      const outcomeRef = companyDocRef.collection("outcome");
+      // Preparar os dados a serem adicionados ou atualizados
+      const newOutcome = {
+        date: date,
+        folha: values.folha || 0,
+        estruturas: values.estruturas || 0,
+        impostos: values.impostos || 0,
+        contabilidade: values.contabilidade || 0,
+      };
+      // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+      await outcomeRef.doc(yearMonth).set(newOutcome);
+      // Retornar sucesso
+      res.status(200).json({
+        message: "outcome atualizado com sucesso",
+        data: newOutcome,
+      });
+    } else if (type == "income") {
+      // Referência à subcoleção "income"
+      const incomeRef = companyDocRef.collection("income");
+      // Preparar os dados a serem adicionados ou atualizados
+      const newIncome = {
+        date: date,
+        faturamento: values.faturamento || 0,
+      };
+      // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+      await incomeRef.doc(yearMonth).set(newIncome);
+      // Retornar sucesso
+      res.status(200).json({
+        message: "income atualizado com sucesso",
+        data: newIncome,
+      });
+    } else if (type == "customerLoss") {
+      // Referência à subcoleção "customerLoss"
+      const customerLossRef = companyDocRef.collection("customerLoss");
+      // Preparar os dados a serem adicionados ou atualizados
+      const newCustomerLoss = {
+        date: date,
+        atendimento: values.atendimento || 0,
+        preco: values.preco || 0,
+        desatualizacao: values.desatualizacao || 0,
+        indequacao: values.indequacao || 0,
+      };
+      // Adicionar ou atualizar o documento com o ID igual ao ano e mês
+      await customerLossRef.doc(yearMonth).set(newCustomerLoss);
+      // Retornar sucesso
+      res.status(200).json({
+        message: "customerLoss atualizado com sucesso",
+        data: newCustomerLoss,
+      });
+    } else {
+      res
+        .status(500)
+        .send({ error: "Nenhum Tipo identificado", details: err.message });
     }
   } catch (err) {
     console.error("Erro ao atualizar o documento:", err);
