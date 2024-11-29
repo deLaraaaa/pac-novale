@@ -4,17 +4,17 @@ import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:http/http.dart' as http;
 
-class EngagementInfoScreen extends StatefulWidget {
+class EmployeeInfoScreen extends StatefulWidget {
   final String companyId;
 
-  const EngagementInfoScreen({Key? key, required this.companyId})
+  const EmployeeInfoScreen({Key? key, required this.companyId})
       : super(key: key);
 
   @override
-  _EngagementInfoScreenState createState() => _EngagementInfoScreenState();
+  _EmployeeInfoScreenState createState() => _EmployeeInfoScreenState();
 }
 
-class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
+class _EmployeeInfoScreenState extends State<EmployeeInfoScreen> {
   bool showViewMode = true; // Define o estado inicial como "Exibir Informações"
   bool showAverage = false; // Alterna entre Média e Soma
   DateTime? selectedStartDate;
@@ -23,10 +23,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
   Map<String, TextEditingController> controllers = {};
 
   Map<String, int> values = {
-    'mentorias': 0,
-    'cursos': 0,
-    'palestras': 0,
-    'eventos': 0,
+    'funcionarios': 0
   };
 
   @override
@@ -34,7 +31,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
     super.initState();
 
     // Inicializa os controladores e valores para os campos
-    ['mentorias', 'cursos', 'palestras', 'eventos'].forEach((field) {
+    ['funcionarios'].forEach((field) {
       controllers[field] = TextEditingController(text: '0');
     });
   }
@@ -64,7 +61,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'id': widget.companyId,
-        'type': "engagement",
+        'type': "employee",
         'startDate': startDate.toIso8601String(),
         'endDate': endDate.toIso8601String(),
       }),
@@ -74,10 +71,8 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       final Map<String, dynamic> responseData = json.decode(response.body);
       final List<dynamic> data = responseData['data'];
       // Inicializa variáveis para soma e média
-      int totalMentorias = 0;
-      int totalCursos = 0;
-      int totalPalestras = 0;
-      int totalEventos = 0;
+      int totalEmployee = 0;
+
       int count = calculateMonthDifference(startDate, endDate); // Para contar quantos itens são válidos para média
       // Itera sobre os dados recebidos
       for (var item in data) {
@@ -89,10 +84,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
             // Verifica se a data está no intervalo correto (inclusive as datas de início e fim)
             if (!itemDate.isBefore(startDate) && !itemDate.isAfter(endDate)) {
               // Verifica e converte os valores de mentoria, cursos, palestras e eventos para inteiros
-              totalMentorias += _parseToInt(item['mentorias']);
-              totalCursos += _parseToInt(item['cursos']);
-              totalPalestras += _parseToInt(item['palestras']);
-              totalEventos += _parseToInt(item['eventos']);
+              totalEmployee += _parseToInt(item['funcionarios']);
             }
           } catch (e) {
             print("Erro ao parsear a data: ${item['date']}. Erro: $e");
@@ -104,21 +96,12 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
 
       setState(() {
         if(isInsert == true){
-          _updateTextFieldValue('mentorias', totalMentorias);
-          _updateTextFieldValue('cursos', totalCursos);
-          _updateTextFieldValue('palestras', totalPalestras);
-          _updateTextFieldValue('eventos', totalEventos);
+          _updateTextFieldValue('funcionarios', totalEmployee);
         }
         if (showAverage && count > 0) {
-          values['mentorias'] = (totalMentorias / count).round();
-          values['cursos'] = (totalCursos / count).round();
-          values['palestras'] = (totalPalestras / count).round();
-          values['eventos'] = (totalEventos / count).round();
+          values['funcionarios'] = (totalEmployee / count).round();
         } else {
-          values['mentorias'] = totalMentorias;
-          values['cursos'] = totalCursos;
-          values['palestras'] = totalPalestras;
-          values['eventos'] = totalEventos;
+          values['funcionarios'] = totalEmployee;
         }
       });
     } else {
@@ -140,7 +123,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
         'id': widget.companyId,
         'date': date.toIso8601String(),
         'values': values,
-        'type': 'engagement'
+        'type': 'employee'
       }),
     );
 
@@ -185,13 +168,6 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
     return (yearDifference * 12) + monthDifference + 1;
   }
 
-  final Map<String, String> info = {
-    "Mentorias": "15",
-    "Cursos": "8",
-    "Palestras": "5",
-    "Eventos": "12",
-  };
-
   void _updateTextFieldValue(String valueKey, int newValue) {
     final controller = controllers[valueKey];
     if (controller != null) {
@@ -203,7 +179,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Engajamento"),
+        title: Text("Funcionários"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -394,16 +370,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildInfoRow(
-              "Mentorias:", values['mentorias'].toString(), Icons.co_present),
-          SizedBox(height: 12),
-          _buildInfoRow(
-              "Cursos:", values['cursos'].toString(), Icons.menu_book_rounded),
-          SizedBox(height: 12),
-          _buildInfoRow("Palestras:", values['palestras'].toString(),
-              Icons.cases_outlined),
-          SizedBox(height: 12),
-          _buildInfoRow("Eventos:", values['eventos'].toString(),
-              Icons.door_sliding_outlined),
+              "Funcionários:", values['funcionarios'].toString(), Icons.co_present),
         ],
       ),
     );
@@ -440,13 +407,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(title: "Mentorias", value: "mentorias"),
-              SizedBox(height: 8),
-              _buildTextField(title: "Cursos", value: "cursos"),
-              SizedBox(height: 8),
-              _buildTextField(title: "Palestras", value: "palestras"),
-              SizedBox(height: 8),
-              _buildTextField(title: "Eventos", value: "eventos"),
+              _buildTextField(title: "Funcionários", value: "funcionarios"),
             ],
           ),
           SizedBox(height: 50.0),
