@@ -1,151 +1,20 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
-import 'package:http/http.dart' as http;
 
-class EngagementInfoScreen extends StatefulWidget {
-  final String companyId;
-
-  const EngagementInfoScreen({Key? key, required this.companyId})
-      : super(key: key);
-
+class CustomerLossInfoScreen extends StatefulWidget {
   @override
-  _EngagementInfoScreenState createState() => _EngagementInfoScreenState();
+  _CustomerLossInfoScreenState createState() => _CustomerLossInfoScreenState();
 }
 
-class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
+class _CustomerLossInfoScreenState extends State<CustomerLossInfoScreen> {
   bool showViewMode = true; // Define o estado inicial como "Exibir Informações"
   bool showAverage = false; // Alterna entre Média e Soma
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   DateTime? insertDate;
-  Map<String, TextEditingController> controllers = {};
 
-  Map<String, int> values = {
-    'mentorias': 0,
-    'cursos': 0,
-    'palestras': 0,
-    'eventos': 0,
-  };
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Inicializa os controladores e valores para os campos
-    ['mentorias', 'cursos', 'palestras', 'eventos'].forEach((field) {
-      controllers[field] = TextEditingController(text: '0');
-    });
-  }
-
-  int _parseToInt(dynamic value) {
-    try {
-      // Verifica se o valor é um número ou uma string que pode ser convertida para inteiro
-      if (value != null) {
-        return int.tryParse(value.toString()) ??
-            0; // Retorna 0 se não conseguir parsear
-      }
-    } catch (e) {
-      print("Erro ao parsear o valor: $value. Erro: $e");
-    }
-    return 0; // Retorna 0 em caso de erro
-  }
-
-  Future<void> getCompanieInfo(DateTime? startDate, DateTime? endDate, bool? isInsert) async {
-    if (startDate == null || endDate == null) {
-      print('Datas não fornecidas');
-      return;
-    }
-    print(calculateMonthDifference(startDate, endDate));
-    final url = Uri.parse('http://10.0.2.2:3000/get_info_by_type');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'id': widget.companyId,
-        'type': "engagement",
-        'startDate': startDate.toIso8601String(),
-        'endDate': endDate.toIso8601String(),
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      final List<dynamic> data = responseData['data'];
-      // Inicializa variáveis para soma e média
-      int totalMentorias = 0;
-      int totalCursos = 0;
-      int totalPalestras = 0;
-      int totalEventos = 0;
-      int count = calculateMonthDifference(startDate, endDate); // Para contar quantos itens são válidos para média
-      // Itera sobre os dados recebidos
-      for (var item in data) {
-        // Verifica se a chave 'date' existe e é válida
-        if (item.containsKey('date') && item['date'] != null) {
-          try {
-            final itemDate = DateTime.parse(item['date']);
-
-            // Verifica se a data está no intervalo correto (inclusive as datas de início e fim)
-            if (!itemDate.isBefore(startDate) && !itemDate.isAfter(endDate)) {
-              // Verifica e converte os valores de mentoria, cursos, palestras e eventos para inteiros
-              totalMentorias += _parseToInt(item['mentorias']);
-              totalCursos += _parseToInt(item['cursos']);
-              totalPalestras += _parseToInt(item['palestras']);
-              totalEventos += _parseToInt(item['eventos']);
-            }
-          } catch (e) {
-            print("Erro ao parsear a data: ${item['date']}. Erro: $e");
-          }
-        } else {
-          print("Data não encontrada para o item: $item");
-        }
-      }
-
-      setState(() {
-        if(isInsert == true){
-          _updateTextFieldValue('mentorias', totalMentorias);
-          _updateTextFieldValue('cursos', totalCursos);
-          _updateTextFieldValue('palestras', totalPalestras);
-          _updateTextFieldValue('eventos', totalEventos);
-        }
-        if (showAverage && count > 0) {
-          values['mentorias'] = (totalMentorias / count).round();
-          values['cursos'] = (totalCursos / count).round();
-          values['palestras'] = (totalPalestras / count).round();
-          values['eventos'] = (totalEventos / count).round();
-        } else {
-          values['mentorias'] = totalMentorias;
-          values['cursos'] = totalCursos;
-          values['palestras'] = totalPalestras;
-          values['eventos'] = totalEventos;
-        }
-      });
-    } else {
-      print('Erro ao buscar informações: ${response.body}');
-    }
-  }
-
-  Future<void> updateCompany(DateTime? date, Map<String, int> values) async {
-    if (date == null) {
-      print('Data não fornecida');
-      return;
-    }
-
-    final url = Uri.parse('http://10.0.2.2:3000/update_companie_info');
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'id': widget.companyId,
-        'date': date.toIso8601String(),
-        'values': values,
-        'type': 'engagement'
-      }),
-    );
-
-  }
-
+  // Método para selecionar apenas o mês e ano
   Future<void> _selectMonthYear(
       BuildContext context, bool isStart, bool isInsert) async {
     final DateTime? picked = await showMonthYearPicker(
@@ -166,7 +35,6 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       setState(() {
         if (isInsert) {
           insertDate = picked;
-          getCompanieInfo(picked, picked, true);
         } else {
           if (isStart) {
             selectedStartDate = picked;
@@ -178,26 +46,13 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
     }
   }
 
-  int calculateMonthDifference(DateTime startDate, DateTime endDate) {
-    int yearDifference = endDate.year - startDate.year;
-    int monthDifference = endDate.month - startDate.month;
-
-    return (yearDifference * 12) + monthDifference + 1;
-  }
-
+  // Informações fictícias para demonstração
   final Map<String, String> info = {
-    "Mentorias": "15",
-    "Cursos": "8",
-    "Palestras": "5",
-    "Eventos": "12",
+    "Atendimento": "15",
+    "Preco": "8",
+    "Desatualizacao": "5",
+    "Indequacao": "12",
   };
-
-  void _updateTextFieldValue(String valueKey, int newValue) {
-    final controller = controllers[valueKey];
-    if (controller != null) {
-      controller.text = newValue.toString();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -315,7 +170,7 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
                           (selectedEndDate!
                               .isAtSameMomentAs(selectedStartDate!) ||
                               selectedEndDate!.isAfter(selectedStartDate!))) {
-                        getCompanieInfo(selectedStartDate, selectedEndDate, false);
+                        getCompanieInfo(selectedStartDate, selectedEndDate);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -393,17 +248,15 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow(
-              "Mentorias:", values['mentorias'].toString(), Icons.co_present),
+          _buildInfoRow("Atendimento:", info["Atendimento"]!, Icons.co_present),
+          SizedBox(height: 12),
+          _buildInfoRow("Preço:", info["Preco"]!, Icons.menu_book_rounded),
           SizedBox(height: 12),
           _buildInfoRow(
-              "Cursos:", values['cursos'].toString(), Icons.menu_book_rounded),
+              "Desatualização:", info["Desatualizacao"]!, Icons.cases_outlined),
           SizedBox(height: 12),
-          _buildInfoRow("Palestras:", values['palestras'].toString(),
-              Icons.cases_outlined),
-          SizedBox(height: 12),
-          _buildInfoRow("Eventos:", values['eventos'].toString(),
-              Icons.door_sliding_outlined),
+          _buildInfoRow(
+              "Indequação:", info["Indequacao"]!, Icons.door_sliding_outlined),
         ],
       ),
     );
@@ -440,20 +293,21 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(title: "Mentorias", value: "mentorias"),
+              _buildTextField(title: "Atendimento", value: "0"),
               SizedBox(height: 8),
-              _buildTextField(title: "Cursos", value: "cursos"),
+              _buildTextField(title: "Preço", value: "0"),
               SizedBox(height: 8),
-              _buildTextField(title: "Palestras", value: "palestras"),
+              _buildTextField(title: "Desatualização", value: "0"),
               SizedBox(height: 8),
-              _buildTextField(title: "Eventos", value: "eventos"),
+              _buildTextField(title: "Indequação", value: "0"),
             ],
           ),
           SizedBox(height: 50.0),
           // Botão de Salvar
           ElevatedButton(
             onPressed: () {
-              updateCompany(insertDate, values);
+              // Ação ao salvar (aqui apenas um exemplo com print)
+              print("Informações salvas!");
             },
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(horizontal: 36.0, vertical: 24.0),
@@ -517,8 +371,6 @@ class _EngagementInfoScreenState extends State<EngagementInfoScreen> {
 
   Widget _buildTextField({required String title, required String value}) {
     return TextField(
-      controller: controllers[value],
-      onChanged: (item) => {values[value] = int.parse(item)},
       decoration: InputDecoration(
         labelText: title,
         border: OutlineInputBorder(
