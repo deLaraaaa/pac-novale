@@ -1,5 +1,8 @@
 import admin from "firebase-admin";
-import serviceAccount from "./key/pac-novale2-firebase-adminsdk-6mljm-2923cb9de2.json" assert { type: "json" };
+import fs from "fs";
+
+const serviceAccount = JSON.parse(fs.readFileSync("./key/pac-novale2-firebase-adminsdk-6mljm-82942e928b.json", "utf8"));
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
