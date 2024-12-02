@@ -27,7 +27,7 @@ class ShowBusinessScreenState extends State<ShowBusinessScreen> {
       isLoading = true;
     });
 
-    final url = Uri.parse('http://pac-novale-api.onrender.com/get_companies');
+    final url = Uri.parse('https://pac-novale-api.onrender.com/get_companies');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

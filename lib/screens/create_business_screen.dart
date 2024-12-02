@@ -77,7 +77,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
       isLoading = true;
     });
 
-    final url = Uri.parse('http://pac-novale-api.onrender.com/create_companies');
+    final url = Uri.parse('https://pac-novale-api.onrender.com/create_companies');
     try {
       final response = await http.post(
         url,

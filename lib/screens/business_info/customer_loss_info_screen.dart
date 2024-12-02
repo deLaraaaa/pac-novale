@@ -58,7 +58,7 @@ class _CustomerLossInfoScreenState extends State<CustomerLossInfoScreen> {
       return;
     }
     print(calculateMonthDifference(startDate, endDate));
-    final url = Uri.parse('http://pac-novale-api.onrender.com/get_info_by_type');
+    final url = Uri.parse('https://pac-novale-api.onrender.com/get_info_by_type');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -132,7 +132,7 @@ class _CustomerLossInfoScreenState extends State<CustomerLossInfoScreen> {
       return;
     }
 
-    final url = Uri.parse('http://pac-novale-api.onrender.com/update_companie_info');
+    final url = Uri.parse('https://pac-novale-api.onrender.com/update_companie_info');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},

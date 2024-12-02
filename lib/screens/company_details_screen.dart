@@ -45,7 +45,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       isDeleting = true;
     });
 
-    final url = Uri.parse('http://pac-novale-api.onrender.com/delete_company');
+    final url = Uri.parse('https://pac-novale-api.onrender.com/delete_company');
     final response = await http.delete(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -67,7 +67,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   }
 
   Future<void> updateCompany(String field, String value) async {
-    final url = Uri.parse('http://pac-novale-api.onrender.com/update_company');
+    final url = Uri.parse('https://pac-novale-api.onrender.com/update_company');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},

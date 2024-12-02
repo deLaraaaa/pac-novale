@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 typedef CompanyData = Map<String, dynamic>;
 
 class CompanyService {
-  static const String _baseUrl = 'http://pac-novale-api.onrender.com/companies';
+  static const String _baseUrl = 'https://pac-novale-api.onrender.com/companies';
   static final CompanyService _instance = CompanyService._internal();
 
   factory CompanyService() {
