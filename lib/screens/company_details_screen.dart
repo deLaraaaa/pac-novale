@@ -45,7 +45,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
       isDeleting = true;
     });
 
-    final url = Uri.parse('http://pac-novale-api.onrender.com/delete_company');
+    final url = Uri.parse('http://10.0.2.2:3000/delete_company');
     final response = await http.delete(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -67,7 +67,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   }
 
   Future<void> updateCompany(String field, String value) async {
-    final url = Uri.parse('http://pac-novale-api.onrender.com/update_company');
+    final url = Uri.parse('http://10.0.2.2:3000/update_company');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -238,14 +238,15 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   }
 
   Widget buildDropdownCard(
-      BuildContext context,
-      String title,
-      String content,
-      List<String> options,
-      Function(String) onOptionSelected,
-      ) {
+    BuildContext context,
+    String title,
+    String content,
+    List<String> options,
+    Function(String) onOptionSelected,
+  ) {
     return GestureDetector(
-      onLongPress: () => openDropdownDialog(context, title, content, options, onOptionSelected),
+      onLongPress: () => openDropdownDialog(
+          context, title, content, options, onOptionSelected),
       child: SizedBox(
         width: double.infinity,
         child: Card(
@@ -268,12 +269,12 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
   }
 
   void openDropdownDialog(
-      BuildContext context,
-      String title,
-      String currentValue,
-      List<String> options,
-      Function(String) onOptionSelected,
-      ) {
+    BuildContext context,
+    String title,
+    String currentValue,
+    List<String> options,
+    Function(String) onOptionSelected,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -339,7 +340,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                   'Tipo',
                   companyDetails['Type'] ?? 'Pendente',
                   ['Incubada', 'Coworking', 'Âncora'],
-                      (String newValue) async {
+                  (String newValue) async {
                     // Atualiza os dados no servidor e no estado local
                     await updateCompany('Tipo', newValue);
                     setState(() {
@@ -352,7 +353,7 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                   'Estágio',
                   companyDetails['Status'] ?? 'Pendente',
                   ['Ideação', 'Operação', 'Tração', 'Scale-Up'],
-                      (String newValue) async {
+                  (String newValue) async {
                     // Atualiza os dados no servidor e no estado local
                     await updateCompany('Estágio', newValue);
                     setState(() {
@@ -432,8 +433,8 @@ class CompanyDetailsScreenState extends State<CompanyDetailsScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => IncomeInfoScreen(
-                                  companyId: widget.companyId),
+                              builder: (context) =>
+                                  IncomeInfoScreen(companyId: widget.companyId),
                             ),
                           );
                         },

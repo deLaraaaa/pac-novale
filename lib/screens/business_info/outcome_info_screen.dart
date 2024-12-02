@@ -52,13 +52,14 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
     return 0; // Retorna 0 em caso de erro
   }
 
-  Future<void> getCompanieInfo(DateTime? startDate, DateTime? endDate, bool? isInsert) async {
+  Future<void> getCompanieInfo(
+      DateTime? startDate, DateTime? endDate, bool? isInsert) async {
     if (startDate == null || endDate == null) {
       print('Datas não fornecidas');
       return;
     }
     print(calculateMonthDifference(startDate, endDate));
-    final url = Uri.parse('http://pac-novale-api.onrender.com/get_info_by_type');
+    final url = Uri.parse('http://10.0.2.2:3000/get_info_by_type');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -78,7 +79,8 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
       int totalEstruturas = 0;
       int totalImpostos = 0;
       int totalContabilidade = 0;
-      int count = calculateMonthDifference(startDate, endDate); // Para contar quantos itens são válidos para média
+      int count = calculateMonthDifference(startDate,
+          endDate); // Para contar quantos itens são válidos para média
       // Itera sobre os dados recebidos
       for (var item in data) {
         // Verifica se a chave 'date' existe e é válida
@@ -103,7 +105,7 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
       }
 
       setState(() {
-        if(isInsert == true){
+        if (isInsert == true) {
           _updateTextFieldValue('folha', totalFolha);
           _updateTextFieldValue('estruturas', totalEstruturas);
           _updateTextFieldValue('impostos', totalImpostos);
@@ -132,7 +134,7 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
       return;
     }
 
-    final url = Uri.parse('http://pac-novale-api.onrender.com/update_companie_info');
+    final url = Uri.parse('http://10.0.2.2:3000/update_companie_info');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -143,7 +145,6 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
         'type': 'outcome'
       }),
     );
-
   }
 
   Future<void> _selectMonthYear(
@@ -213,7 +214,8 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
                     Expanded(
                       child: Text(
                         "Modo atual: ${showViewMode ? "Somente exibir informações." : "Manipular e editar informações."}",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -243,7 +245,8 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
                             Text("Mês e Ano de Entrada:"),
                             SizedBox(height: 8),
                             GestureDetector(
-                              onTap: () => _selectMonthYear(context, true, false),
+                              onTap: () =>
+                                  _selectMonthYear(context, true, false),
                               child: Container(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 12, horizontal: 16),
@@ -254,7 +257,7 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
                                 child: Text(
                                   selectedStartDate != null
                                       ? DateFormat("MM/yyyy")
-                                      .format(selectedStartDate!)
+                                          .format(selectedStartDate!)
                                       : "Selecione o mês e ano",
                                   textAlign: TextAlign.center,
                                 ),
@@ -272,7 +275,8 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
                             Text("Mês e Ano de Saída:"),
                             SizedBox(height: 8),
                             GestureDetector(
-                              onTap: () => _selectMonthYear(context, false, false),
+                              onTap: () =>
+                                  _selectMonthYear(context, false, false),
                               child: Container(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 12, horizontal: 16),
@@ -283,7 +287,7 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
                                 child: Text(
                                   selectedEndDate != null
                                       ? DateFormat("MM/yyyy")
-                                      .format(selectedEndDate!)
+                                          .format(selectedEndDate!)
                                       : "Selecione o mês e ano",
                                   textAlign: TextAlign.center,
                                 ),
@@ -306,9 +310,10 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
                       if (selectedStartDate != null &&
                           selectedEndDate != null &&
                           (selectedEndDate!
-                              .isAtSameMomentAs(selectedStartDate!) ||
+                                  .isAtSameMomentAs(selectedStartDate!) ||
                               selectedEndDate!.isAfter(selectedStartDate!))) {
-                        getCompanieInfo(selectedStartDate, selectedEndDate, false);
+                        getCompanieInfo(
+                            selectedStartDate, selectedEndDate, false);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -386,14 +391,13 @@ class _OutcomeInfoScreenState extends State<OutcomeInfoScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoRow(
-              "Folha:", values['folha'].toString(), Icons.co_present),
+          _buildInfoRow("Folha:", values['folha'].toString(), Icons.co_present),
+          SizedBox(height: 12),
+          _buildInfoRow("Estruturas:", values['estruturas'].toString(),
+              Icons.menu_book_rounded),
           SizedBox(height: 12),
           _buildInfoRow(
-              "Estruturas:", values['estruturas'].toString(), Icons.menu_book_rounded),
-          SizedBox(height: 12),
-          _buildInfoRow("Impostos:", values['impostos'].toString(),
-              Icons.cases_outlined),
+              "Impostos:", values['impostos'].toString(), Icons.cases_outlined),
           SizedBox(height: 12),
           _buildInfoRow("Contabilidade:", values['contabilidade'].toString(),
               Icons.door_sliding_outlined),

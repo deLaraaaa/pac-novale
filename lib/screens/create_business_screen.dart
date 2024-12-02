@@ -21,10 +21,15 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
       TextEditingController();
   final TextEditingController _businessInovationController =
       TextEditingController();
-  final TextEditingController _businessStatusController =
-      TextEditingController();
   final TextEditingController _entryDateController = TextEditingController();
   final TextEditingController _exitDateController = TextEditingController();
+
+  String selectedTypeValue = "Nenhuma";
+  final List<String> types = ["Incubada", "Âncora", "Coworking"];
+
+  String selectedStatusValue = "Nenhuma";
+  final List<String> status = ['Ideação', 'Operação', 'Tração', 'Scale-Up'];
+
 
   DateTime? _selectedEntryDate;
   DateTime? _selectedExitDate;
@@ -77,7 +82,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
       isLoading = true;
     });
 
-    final url = Uri.parse('http://pac-novale-api.onrender.com/create_companies');
+    final url = Uri.parse('http://10.0.2.2:3000/create_companies');
     try {
       final response = await http.post(
         url,
@@ -87,10 +92,10 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
           'CNPJ': _businessCNPJController.text,
           'Market': _businessMarketController.text,
           'Inovation': _businessInovationController.text,
-          'Status': _businessStatusController.text,
+          'Status': selectedStatusValue,
           'EntryDate': _formatDateForFirestore(_selectedEntryDate),
           'ExitDate': _formatDateForFirestore(_selectedExitDate),
-          'Type': selectedValue,
+          'Type': selectedTypeValue,
           'Activate': true,
         }),
       );
@@ -129,6 +134,50 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget buildDropdownCard(
+      BuildContext context,
+      String title,
+      String selectedValue,
+      List<String> options,
+      Function(String) onOptionSelected,
+      ) {
+    return GestureDetector(
+      onTap: () async {
+        final String? chosenOption = await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(title),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: options
+                    .map((option) => ListTile(
+                  title: Text(option),
+                  onTap: () => Navigator.pop(context, option),
+                ))
+                    .toList(),
+              ),
+            );
+          },
+        );
+
+        if (chosenOption != null) {
+          onOptionSelected(chosenOption);
+        }
+      },
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            '$title: $selectedValue',
+            style: const TextStyle(fontSize: 18),
+          ),
+        ),
+      ),
     );
   }
 
@@ -256,66 +305,28 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          const Text(
-                            'Tipo da Empresa:',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(width: 10),
-                          DropdownButton<String>(
-                            value: selectedValue,
-                            icon: const Icon(Icons.arrow_downward),
-                            iconSize: 24,
-                            elevation: 16,
-                            style: const TextStyle(
-                                color: Colors.black, fontSize: 16),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.teal,
-                            ),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                selectedValue = newValue;
-                              });
-                            },
-                            items: <String>[
-                              'Empresa Incubada',
-                              'Empresa em Tração',
-                              'Empresa Finalizada'
-                            ].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                          ),
-                        ],
+                      buildDropdownCard(
+                        context,
+                        "Tipo de Empresa",
+                        selectedTypeValue,
+                        types,
+                            (String newValue) {
+                          setState(() {
+                            selectedTypeValue = newValue;
+                          });
+                        },
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          const Text(
-                            'Estágio:',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _businessStatusController,
-                              decoration: const InputDecoration(
-                                labelText: 'Estágio da Empresa',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Por favor, insira o estágio da empresa';
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                        ],
+                      buildDropdownCard(
+                        context,
+                        "Estágio da Empresa",
+                        selectedStatusValue,
+                        status,
+                            (String newValue) {
+                          setState(() {
+                            selectedStatusValue = newValue;
+                          });
+                        },
                       ),
                       const SizedBox(height: 20),
                       Row(
