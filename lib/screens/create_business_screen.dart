@@ -30,7 +30,6 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
   String selectedStatusValue = "Nenhuma";
   final List<String> status = ['Ideação', 'Operação', 'Tração', 'Scale-Up'];
 
-
   DateTime? _selectedEntryDate;
   DateTime? _selectedExitDate;
 
@@ -82,7 +81,8 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
       isLoading = true;
     });
 
-    final url = Uri.parse('http://10.0.2.2:3000/create_companies');
+    final url =
+        Uri.parse('https://pac-novale-api.onrender.com/create_companies');
     try {
       final response = await http.post(
         url,
@@ -138,12 +138,12 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
   }
 
   Widget buildDropdownCard(
-      BuildContext context,
-      String title,
-      String selectedValue,
-      List<String> options,
-      Function(String) onOptionSelected,
-      ) {
+    BuildContext context,
+    String title,
+    String selectedValue,
+    List<String> options,
+    Function(String) onOptionSelected,
+  ) {
     return GestureDetector(
       onTap: () async {
         final String? chosenOption = await showDialog<String>(
@@ -155,9 +155,9 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: options
                     .map((option) => ListTile(
-                  title: Text(option),
-                  onTap: () => Navigator.pop(context, option),
-                ))
+                          title: Text(option),
+                          onTap: () => Navigator.pop(context, option),
+                        ))
                     .toList(),
               ),
             );
@@ -310,7 +310,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                         "Tipo de Empresa",
                         selectedTypeValue,
                         types,
-                            (String newValue) {
+                        (String newValue) {
                           setState(() {
                             selectedTypeValue = newValue;
                           });
@@ -322,7 +322,7 @@ class CreateBusinessScreenState extends State<CreateBusinessScreen> {
                         "Estágio da Empresa",
                         selectedStatusValue,
                         status,
-                            (String newValue) {
+                        (String newValue) {
                           setState(() {
                             selectedStatusValue = newValue;
                           });
